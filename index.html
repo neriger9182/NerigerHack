@@ -14,21 +14,22 @@
             --accent-blue: #2563eb;
             --border-color: #e2e8f0;
             --star-gold: #f59e0b;
+            --success-green: #10b981;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; padding-bottom: 80px; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; padding-bottom: 85px; }
 
         .header-title { font-size: 26px; font-weight: 800; margin-bottom: 16px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Чипсы переключения способов оплаты */
+        /* Способы оплаты */
         .currency-selector { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
         .curr-chip { background: #e2e8f0; color: var(--text-sub); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; border: none; }
         .curr-chip.active { background: var(--accent-blue); color: #fff; }
 
-        /* Карточки старого интерфейса */
+        /* Карточки */
         .card { background: var(--card-bg); border-radius: 18px; padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
         .card-title { font-size: 13px; color: var(--text-sub); margin-bottom: 6px; }
         .card-value { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
@@ -37,17 +38,20 @@
         .btn-main { width: 100%; background: var(--accent-blue); color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 8px; text-align: center; }
         .btn-sub { width: 100%; background: #fff; color: var(--text-main); border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; }
 
-        .checkbox-row { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; }
-        .checkbox-row input { width: 18px; height: 18px; accent-color: var(--accent-blue); }
-
-        /* Нижнее меню */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border-color); z-index: 100; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; font-weight: 600; cursor: pointer; width: 25%; border: none; background: none; }
-        .nav-btn.active { color: var(--accent-blue); }
+        /* Красивый профиль */
+        .profile-header { text-align: center; padding: 20px 0 10px 0; }
+        .avatar-box { width: 80px; height: 80px; background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; margin: 0 auto 12px auto; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25); border: 3px solid #fff; }
+        .profile-username { font-size: 22px; font-weight: 800; }
+        .profile-badge { display: inline-flex; align-items: center; gap: 4px; background: #e0f2fe; color: #0369a1; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 12px; margin-top: 6px; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .stat-box { background: var(--card-bg); padding: 14px; border-radius: 14px; }
-        .stat-num { font-size: 20px; font-weight: 800; margin-top: 4px; }
+        .stat-box { background: var(--card-bg); padding: 16px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
+        .stat-num { font-size: 22px; font-weight: 800; margin-top: 4px; color: var(--text-main); }
+
+        /* Нижняя навигация */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border-color); z-index: 100; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; font-weight: 600; cursor: pointer; width: 33%; border: none; background: none; }
+        .nav-btn.active { color: var(--accent-blue); }
 
         /* Окно пополнения */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 16px; z-index: 200; }
@@ -58,7 +62,7 @@
 </head>
 <body>
 
-    <!-- Вкладка Сделки -->
+    <!-- Вкладка 1: Сделки -->
     <div id="tab-deals" class="tab-content active">
         <h1 class="header-title">Мои сделки</h1>
         <button class="btn-main">+ Создать сделку</button>
@@ -75,11 +79,10 @@
         </div>
     </div>
 
-    <!-- Вкладка Кошельки (Сбор способов оплаты) -->
+    <!-- Вкладка 2: Кошельки -->
     <div id="tab-wallets" class="tab-content">
         <h1 class="header-title">Мои кошельки</h1>
         
-        <!-- Кнопки переключения способов оплаты -->
         <div class="currency-selector">
             <button class="curr-chip active" onclick="selectCurrency('ton', '💎 TON', 'Toncoin', '0 TON', this)">💎 TON</button>
             <button class="curr-chip" onclick="selectCurrency('usdt', '💵 USDT', 'Tether', '0 USDT', this)">💵 USDT</button>
@@ -93,32 +96,32 @@
         </div>
 
         <button class="btn-main" onclick="openDepositModal()">Пополнить</button>
-        <button class="btn-sub" style="margin-bottom: 12px;">Вывести</button>
-
-        <div class="card checkbox-row">
-            <span>Скрыть нулевые</span>
-            <input type="checkbox" checked>
-        </div>
+        <button class="btn-sub">Вывести</button>
     </div>
 
-    <!-- Вкладка Лидеры -->
-    <div id="tab-leaders" class="tab-content">
-        <h1 class="header-title">Лидеры</h1>
-        <div class="card">
-            <div style="font-weight: 700;">Лидер недели: Username123</div>
-            <div style="font-size: 13px; color: var(--text-sub);">Объем: 15,000 TON</div>
-        </div>
-    </div>
-
-    <!-- Вкладка Профиль -->
+    <!-- Вкладка 3: Профиль -->
     <div id="tab-profile" class="tab-content">
-        <div style="text-align: center; margin: 20px 0;">
-            <h2 id="profile-name">Freezers</h2>
-            <div style="color: var(--star-gold); font-weight: 600;" id="profile-tag">@Freezers1</div>
+        <div class="profile-header">
+            <div class="avatar-box" id="avatar-letter">F</div>
+            <div class="profile-username" id="profile-name">Freezers</div>
+            <div class="profile-badge">
+                <span>🛡️ Проверен</span> • <span id="profile-tag">@Freezers1</span>
+            </div>
         </div>
+
+        <div class="card-title" style="margin-left: 4px; margin-bottom: 8px;">Статистика профиля</div>
         <div class="stats-grid">
-            <div class="stat-box"><div class="card-title">Успешных</div><div class="stat-num">0</div></div>
-            <div class="stat-box"><div class="card-title">Активных</div><div class="stat-num">0</div></div>
+            <div class="stat-box"><div class="card-title">Успешных</div><div class="stat-num" style="color: var(--success-green);">0</div></div>
+            <div class="stat-box"><div class="card-title">Активных</div><div class="stat-num" style="color: var(--accent-blue);">0</div></div>
+            <div class="stat-box"><div class="card-title">Завершённых</div><div class="stat-num">0</div></div>
+            <div class="stat-box"><div class="card-title">Отменённых</div><div class="stat-num" style="color: var(--text-sub);">0</div></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Гарант сервиса</div>
+            <div style="font-weight: 700; margin: 4px 0;">Официальный гарант: <span style="color: var(--star-gold);">@TonDeal_Guarantor</span></div>
+            <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px;">Комиссия сервиса составляет всего 1%</div>
+            <button class="btn-main" style="margin: 0;">Открыть @TonDeal_Guarantor</button>
         </div>
     </div>
 
@@ -133,11 +136,10 @@
         </div>
     </div>
 
-    <!-- Нижняя навигация -->
+    <!-- Нижняя навигация (3 вкладки) -->
     <div class="bottom-nav">
         <button class="nav-btn active" onclick="switchTab('deals', this)"><span>Сделки</span></button>
         <button class="nav-btn" onclick="switchTab('wallets', this)"><span>Кошельки</span></button>
-        <button class="nav-btn" onclick="switchTab('leaders', this)"><span>Лидеры</span></button>
         <button class="nav-btn" onclick="switchTab('profile', this)"><span>Профиль</span></button>
     </div>
 
@@ -146,6 +148,13 @@
         tg.ready(); tg.expand();
 
         let selectedCurr = 'ton';
+
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('profile-name').innerText = user.first_name;
+            document.getElementById('profile-tag').innerText = `@${user.username || 'user'}`;
+            document.getElementById('avatar-letter').innerText = user.first_name.charAt(0).toUpperCase();
+        }
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
