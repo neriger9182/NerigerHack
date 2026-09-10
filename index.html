@@ -2,145 +2,438 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker Terminal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TonDeal Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: #000;
-            color: #00ff66;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
+        body {
+            background-color: #eef2f5;
+            color: #1a1a1a;
+            padding-bottom: 80px;
+            background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.015) 0, rgba(0, 0, 0, 0.015) 1px, transparent 0, transparent 50px);
         }
 
         .container {
-            position: relative;
-            z-index: 2;
-            background: rgba(0, 20, 0, 0.85);
-            border: 2px solid #00ff66;
-            box-shadow: 0 0 15px #00ff66;
-            border-radius: 10px;
-            padding: 20px;
-            width: 85%;
-            max-width: 400px;
-            text-align: center;
+            padding: 16px;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Заголовки */
         h1 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 8px #00ff66;
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 16px;
         }
 
-        .status {
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            color: #88ff88;
+        /* Карточки */
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
-        .btn {
-            background: transparent;
-            color: #00ff66;
-            border: 1px solid #00ff66;
-            padding: 12px 20px;
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 0 5px #00ff66;
-            transition: all 0.2s ease;
+        /* Кнопки */
+        .btn-primary {
             width: 100%;
-            margin-top: 10px;
+            background: #2f80ed;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(47, 128, 237, 0.3);
+            transition: transform 0.1s, opacity 0.2s;
         }
 
-        .btn:active {
-            background-color: #00ff66;
-            color: #000;
-            box-shadow: 0 0 20px #00ff66;
+        .btn-primary:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        /* Сделки */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .stat-box .title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-box .sub {
+            font-size: 12px;
+            color: #828282;
+        }
+
+        .stat-val {
+            font-size: 22px;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        /* Форма ввода */
+        .input-code {
+            width: 100%;
+            padding: 14px;
+            background: #f2f4f7;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            outline: none;
+        }
+
+        /* Кошельки */
+        .pill-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+        }
+
+        .pill {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .pill.active {
+            background: #2f80ed;
+            color: #ffffff;
+        }
+
+        .wallet-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .wallet-item:last-child {
+            border-bottom: none;
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .coin-icon {
+            width: 36px;
+            height: 36px;
+            background: #2f80ed;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Профиль */
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: #ff5252;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .user-tag {
+            font-size: 14px;
+            color: #e2b93b;
+            font-weight: 600;
+        }
+
+        /* Нижняя навигация */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eef2f5;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #8e8e93;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 25%;
+        }
+
+        .nav-item.active {
+            color: #2f80ed;
+        }
+
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        .guarantor-text {
+            font-size: 13px;
+            color: #4f4f4f;
+            line-height: 1.4;
+        }
+
+        .guarantor-link {
+            color: #e2b93b;
+            font-weight: bold;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas"></canvas>
-
     <div class="container">
-        <h1 id="user-name">SYSTEM ACCESS</h1>
-        <div class="status" id="status-text">> Waiting for command...</div>
         
-        <button class="btn" onclick="runHack()">[ HACK SYSTEM ]</button>
-        <button class="btn" onclick="closeApp()">[ EXIT ]</button>
+        <!-- СТРАНИЦА: СДЕЛКИ -->
+        <div id="page-deals" class="page active">
+            <h1>Мои сделки</h1>
+            
+            <button class="btn-primary" style="margin-bottom: 16px;">+ Создать сделку</button>
+
+            <div class="grid-2">
+                <div class="stat-box">
+                    <div class="title">Активные</div>
+                    <div class="sub">Текущие сделки</div>
+                </div>
+                <div class="stat-box">
+                    <div class="title">История</div>
+                    <div class="sub">Завершённые</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-size: 14px; color: #828282; margin-bottom: 6px;">Присоединиться по коду</div>
+                <input type="text" class="input-code" value="ABC123" placeholder="Введите код">
+                <button class="btn-primary" style="background: #f2f4f7; color: #1a1a1a; box-shadow: none;">Войти в сделку</button>
+            </div>
+
+            <div class="card guarantor-text">
+                Передавайте товар только на <a href="#" class="guarantor-link">@TonDeal_Guarantor</a>. Нажмите на юзернейм, чтобы открыть гаранта.
+            </div>
+        </div>
+
+        <!-- СТРАНИЦА: КОШЕЛЬКИ -->
+        <div id="page-wallets" class="page">
+            <h1>Мои кошельки</h1>
+
+            <div class="pill-selector">
+                <div class="pill active">💎 TON</div>
+                <div class="pill">💵 USDT</div>
+                <div class="pill">⭐ STARS</div>
+                <div class="pill">₽ RUB</div>
+            </div>
+
+            <div class="card">
+                <div style="font-size: 13px; color: #828282; margin-bottom: 8px;">Кошелёк TON</div>
+                <div class="wallet-item">
+                    <div class="wallet-info">
+                        <div class="coin-icon">💎</div>
+                        <div>
+                            <div style="font-weight: 700;">Toncoin</div>
+                            <div style="font-size: 12px; color: #828282;">0 TON</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" style="margin-bottom: 10px;">Пополнить</button>
+            <button class="btn-primary" style="background: #ffffff; color: #1a1a1a; box-shadow: none; border: 1px solid #e0e0e0; margin-bottom: 16px;">Вывести</button>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600;">Скрыть нулевые</span>
+                    <input type="checkbox" checked style="width: 18px; height: 18px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- СТРАНИЦА: ЛИДЕРЫ -->
+        <div id="page-leaders" class="page">
+            <h1>Лидеры</h1>
+            
+            <div class="grid-2">
+                <div class="stat-box">
+                    <div class="title">Рейтинг TON</div>
+                    <div class="sub">По объему сделок</div>
+                </div>
+                <div class="stat-box">
+                    <div class="title">Профиль</div>
+                    <div class="sub">Мой ранг</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-weight: 800; font-size: 16px; margin-bottom: 6px;">Лидер недели: Username123</div>
+                <div style="font-size: 13px; color: #666;">Объем: 15,000 TON</div>
+                <div style="font-size: 13px; color: #666;">Сделок: 50</div>
+            </div>
+        </div>
+
+        <!-- СТРАНИЦА: ПРОФИЛЬ -->
+        <div id="page-profile" class="page">
+            <div class="avatar-container">
+                <div class="avatar" id="avatar-letter">F</div>
+                <div class="user-name" id="user-fullname">Freezers</div>
+                <div class="user-tag" id="user-username">@Freezers1</div>
+            </div>
+
+            <div class="card">
+                <div style="font-weight: 700; margin-bottom: 12px; color: #828282; font-size: 13px;">Статистика сделок</div>
+                <div class="grid-2" style="margin-bottom: 0;">
+                    <div class="stat-box" style="background: #f8fafc;">
+                        <div class="sub">Успешных</div>
+                        <div class="stat-val">0</div>
+                    </div>
+                    <div class="stat-box" style="background: #f8fafc;">
+                        <div class="sub">Активных</div>
+                        <div class="stat-val">0</div>
+                    </div>
+                    <div class="stat-box" style="background: #f8fafc; margin-top: 10px;">
+                        <div class="sub">Завершённых</div>
+                        <div class="stat-val">0</div>
+                    </div>
+                    <div class="stat-box" style="background: #f8fafc; margin-top: 10px;">
+                        <div class="sub">Отменённых</div>
+                        <div class="stat-val">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-size: 14px; color: #666; margin-bottom: 8px;">Гарант</div>
+                <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">Аккаунт гаранта: <span style="color: #e2b93b;">@TonDeal_Guarantor</span></div>
+                <div style="font-size: 12px; color: #828282; margin-bottom: 12px;">Комиссия гаранта: 1%</div>
+                <button class="btn-primary">Открыть @TonDeal_Guarantor</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchPage('deals', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+            Сделки
+        </div>
+        <div class="nav-item" onclick="switchPage('wallets', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            Кошельки
+        </div>
+        <div class="nav-item" onclick="switchPage('leaders', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H7v2h10v-2h-4v-3.1c2.02-.42 3.56-2.07 3.82-4.13C19.24 11.45 21 9.4 21 7V5c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+            Лидеры
+        </div>
+        <div class="nav-item" onclick="switchPage('profile', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Профиль
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачивает окно на весь экран
+        tg.expand();
 
-        // Вывод имени пользователя из Telegram
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-name').innerText = `USER: ${tg.initDataUnsafe.user.first_name}`;
-        }
+        // Переключение страниц
+        function switchPage(pageId, el) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            el.classList.add('active');
 
-        function runHack() {
-            const status = document.getElementById('status-text');
-            status.innerText = "> Bypassing firewall...";
-            setTimeout(() => { status.innerText = "> Extracting data..."; }, 1000);
-            setTimeout(() => { 
-                status.innerText = "> ACCESS GRANTED"; 
-                tg.HapticFeedback.notificationOccurred('success'); // Вибрация
-            }, 2000);
-        }
-
-        function closeApp() {
-            tg.close();
-        }
-
-        // --- Эффект "Матрица" ---
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
-
-        const chars = "0123456789ABCDEFGHJKLMNOPQRSTUVWXYZ";
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = "#00ff66";
-            ctx.font = fontSize + "px monospace";
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.selectionChanged();
             }
         }
 
-        setInterval(drawMatrix, 33);
+        // Автозаполнение данных пользователя из Telegram
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            const name = user.first_name + (user.last_name ? " " + user.last_name : "");
+            
+            document.getElementById('user-fullname').innerText = name;
+            document.getElementById('user-username').innerText = user.username ? `@${user.username}` : '';
+            document.getElementById('avatar-letter').innerText = user.first_name.charAt(0).toUpperCase();
+        }
     </script>
 </body>
-</html>
+                            </html>
