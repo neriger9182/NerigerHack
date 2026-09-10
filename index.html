@@ -19,7 +19,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; padding-bottom: 85px; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; padding-bottom: 95px; }
 
         .header-title { font-size: 26px; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
         .tab-content { display: none; }
@@ -49,9 +49,10 @@
         .stat-box { background: var(--card-bg); padding: 16px; border-radius: 16px; border: 1px solid var(--border-color); }
         .stat-num { font-size: 22px; font-weight: 800; margin-top: 4px; color: var(--text-main); }
 
-        /* Нижняя навигация */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #161b22; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border-color); z-index: 100; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; font-weight: 600; cursor: pointer; width: 33%; border: none; background: none; }
+        /* Увеличенная нижняя навигация с иконками */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #161b22; display: flex; justify-content: space-around; padding: 12px 0 16px 0; border-top: 1px solid var(--border-color); z-index: 100; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-sub); font-size: 12px; font-weight: 700; cursor: pointer; width: 33%; border: none; background: none; }
+        .nav-btn .nav-icon { font-size: 22px; line-height: 1; }
         .nav-btn.active { color: var(--accent-btn); }
 
         /* Окно пополнения */
@@ -120,9 +121,9 @@
 
         <div class="card">
             <div class="card-title">Гарант сервиса</div>
-            <div style="font-weight: 700; margin: 4px 0;">Официальный гарант: <span style="color: var(--star-gold);">@TonDeal_Guarantor</span></div>
+            <div style="font-weight: 700; margin: 4px 0;">Официальный гарант: <span style="color: var(--star-gold);">@freezers1</span></div>
             <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px;">Комиссия сервиса составляет всего 1%</div>
-            <button class="btn-main" style="margin: 0;">Открыть @TonDeal_Guarantor</button>
+            <button class="btn-main" style="margin: 0;" onclick="window.location.href='https://t.me/freezers1'">Открыть @freezers1</button>
         </div>
     </div>
 
@@ -137,11 +138,20 @@
         </div>
     </div>
 
-    <!-- Нижняя навигация -->
+    <!-- Увеличенная нижняя навигация со значками -->
     <div class="bottom-nav">
-        <button class="nav-btn active" onclick="switchTab('deals', this)"><span>Сделки</span></button>
-        <button class="nav-btn" onclick="switchTab('wallets', this)"><span>Кошельки</span></button>
-        <button class="nav-btn" onclick="switchTab('profile', this)"><span>Профиль</span></button>
+        <button class="nav-btn active" onclick="switchTab('deals', this)">
+            <span class="nav-icon">📋</span>
+            <span>Сделки</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('wallets', this)">
+            <span class="nav-icon">👛</span>
+            <span>Кошельки</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('profile', this)">
+            <span class="nav-icon">👤</span>
+            <span>Профиль</span>
+        </button>
     </div>
 
     <script>
