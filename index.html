@@ -2,217 +2,185 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>freezers Mini App</title>
-    <!-- Telegram WebApp SDK -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>freezers — Гарант Сервис</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #38bdf8;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg-color: #0b0e14;
+            --card-bg: #151b26;
+            --accent-color: #0088cc;
+            --text-main: #ffffff;
+            --text-secondary: #8a99ad;
+            --border-color: #232d3f;
+            --success-color: #00c853;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 16px;
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 70px; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
+        .app-header { background-color: var(--card-bg); padding: 16px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .container { padding: 16px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
-            color: var(--accent-color);
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); display: flex; padding: 10px 0; border-top: 1px solid var(--border-color); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 11px; width: 33%; cursor: pointer; }
+        .nav-item.active { color: var(--accent-color); }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+        .card { background-color: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-color); }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background-color: var(--accent-color); color: #fff; font-weight: bold; cursor: pointer; }
+        .btn-pay { background-color: #eab308; color: #000; margin-top: 8px; }
+        .btn-secondary { background-color: #232d3f; color: #fff; }
 
-        .card h2 {
-            font-size: 18px;
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: #fff; }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background-color: #0f172a;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--accent-color);
-            color: #0f172a;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        button:active {
-            opacity: 0.8;
-        }
-
-        .deal-item {
-            border-bottom: 1px solid #334155;
-            padding: 8px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .deal-item:last-child {
-            border-bottom: none;
-        }
+        .deal-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 16px; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 20px; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🛡️ freezers</h1>
-        <p id="user-welcome" style="color: var(--text-muted); font-size: 14px;">Загрузка профиля...</p>
+    <div class="app-header">
+        <h1>❄️ freezers</h1>
+        <p id="user-info">Загрузка...</p>
     </div>
 
-    <!-- Форма создания сделки -->
-    <div class="card">
-        <h2>Создать сделку</h2>
-        <div class="form-group">
-            <label for="deal-title">Название предмета / услуги</label>
-            <input type="text" id="deal-title" placeholder="Например: Telegram Premium 1 год">
+    <div class="container">
+        <!-- Вкладка Сделки -->
+        <div id="tab-deals" class="tab-content active">
+            <button class="btn" onclick="openModal('create-modal')">➕ Создать сделку</button>
+            <div class="card" style="margin-top: 16px;">
+                <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px;">Мои сделки</div>
+                <div id="deals-list"><p style="color: var(--text-secondary); font-size: 13px;">У вас нет активных сделок.</p></div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="deal-amount">Сумма (TON)</label>
-            <input type="number" id="deal-amount" placeholder="0.00">
+
+        <!-- Вкладка Кошелек -->
+        <div id="tab-wallet" class="tab-content">
+            <div class="card" style="text-align: center;">
+                <span style="color: var(--text-secondary);">Оплата через</span>
+                <h2 style="color: var(--accent-color); margin: 10px 0;">Telegram Stars ⭐</h2>
+                <p style="font-size: 12px; color: var(--text-secondary);">Оплата счетов происходит напрямую через Telegram.</p>
+            </div>
         </div>
-        <button id="create-deal-btn">Создать сделку</button>
+
+        <!-- Вкладка Профиль -->
+        <div id="tab-profile" class="tab-content">
+            <div class="card">
+                <h3>Профиль</h3><br>
+                <p>Пользователь: <strong id="profile-name">---</strong></p>
+                <p style="margin-top: 8px;">Гарант: <strong>@freezers1</strong></p>
+            </div>
+        </div>
     </div>
 
-    <!-- Мои сделки (Профиль) -->
-    <div class="card">
-        <h2>Мои активные сделки</h2>
-        <div id="deals-list">
-            <p style="color: var(--text-muted); font-size: 14px;">У вас пока нет активных сделок.</p>
+    <!-- Модалка -->
+    <div id="create-modal" class="modal">
+        <div class="modal-content">
+            <h3>Создание сделки</h3><br>
+            <div class="form-group">
+                <label>Предмет/Услуга</label>
+                <input type="text" id="deal-title" placeholder="Описание">
+            </div>
+            <div class="form-group">
+                <label>Сумма в Звёздах (⭐ Stars)</label>
+                <input type="number" id="deal-amount" placeholder="10">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="closeModal('create-modal')">Отмена</button>
+                <button class="btn" onclick="submitDeal()">Создать</button>
+            </div>
         </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('deals', this)"><span>Сделки</span></div>
+        <div class="nav-item" onclick="switchTab('wallet', this)"><span>Кошелек</span></div>
+        <div class="nav-item" onclick="switchTab('profile', this)"><span>Профиль</span></div>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        tg.ready(); tg.expand();
 
-        // Отображение данных пользователя из Telegram
         const user = tg.initDataUnsafe?.user;
-        const userWelcome = document.getElementById('user-welcome');
         if (user) {
-            userWelcome.innerText = `Пользователь: ${user.first_name} (@${user.username || 'no_username'})`;
-        } else {
-            userWelcome.innerText = 'Запущено вне Telegram';
+            document.getElementById('user-info').innerText = `@${user.username || user.first_name}`;
+            document.getElementById('profile-name').innerText = user.first_name;
         }
 
-        // Загрузка сделок из локальной памяти браузера
-        function loadDeals() {
-            const dealsList = document.getElementById('deals-list');
-            const savedDeals = JSON.parse(localStorage.getItem('freezers_deals') || '[]');
+        function switchTab(tabName, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            el.classList.add('active');
+        }
 
-            if (savedDeals.length === 0) {
-                dealsList.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">У вас пока нет активных сделок.</p>';
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function loadDeals() {
+            const list = document.getElementById('deals-list');
+            const deals = JSON.parse(localStorage.getItem('frz_deals_v2') || '[]');
+
+            if (deals.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">У вас нет активных сделок.</p>';
                 return;
             }
 
-            dealsList.innerHTML = '';
-            savedDeals.forEach((deal) => {
+            list.innerHTML = '';
+            deals.forEach((deal, index) => {
                 const item = document.createElement('div');
                 item.className = 'deal-item';
                 item.innerHTML = `
-                    <div>
-                        <strong>${deal.title}</strong><br>
-                        <small style="color: var(--text-muted);">${deal.date}</small>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>${deal.title}</strong>
+                        <span style="color: #eab308; font-weight: bold;">⭐ ${deal.amount} Stars</span>
                     </div>
-                    <div style="color: var(--accent-color); font-weight: bold;">
-                        ${deal.amount} TON
-                    </div>
+                    <button class="btn btn-pay" onclick="payDeal(${index})">Оплатить ⭐ ${deal.amount}</button>
                 `;
-                dealsList.appendChild(item);
+                list.appendChild(item);
             });
         }
 
-        // Создание новой сделки
-        document.getElementById('create-deal-btn').addEventListener('click', () => {
-            const titleInput = document.getElementById('deal-title');
-            const amountInput = document.getElementById('deal-amount');
-
-            const title = titleInput.value.trim();
-            const amount = amountInput.value.trim();
+        function submitDeal() {
+            const title = document.getElementById('deal-title').value.trim();
+            const amount = document.getElementById('deal-amount').value.trim();
 
             if (!title || !amount) {
-                tg.showAlert("Заполните название и сумму сделки!");
+                tg.showAlert("Заполните поля!");
                 return;
             }
 
-            const newDeal = {
-                title: title,
-                amount: amount,
-                date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
+            const deals = JSON.parse(localStorage.getItem('frz_deals_v2') || '[]');
+            deals.unshift({ title, amount });
+            localStorage.setItem('frz_deals_v2', JSON.stringify(deals));
 
-            // Сохраняем в память устройства
-            const savedDeals = JSON.parse(localStorage.getItem('freezers_deals') || '[]');
-            savedDeals.unshift(newDeal);
-            localStorage.setItem('freezers_deals', JSON.stringify(savedDeals));
-
-            // Обновляем список на экране
+            closeModal('create-modal');
+            document.getElementById('deal-title').value = '';
+            document.getElementById('deal-amount').value = '';
             loadDeals();
+        }
 
-            // Отправляем сообщение боту
+        function payDeal(index) {
+            const deals = JSON.parse(localStorage.getItem('frz_deals_v2') || '[]');
+            const deal = deals[index];
+
             tg.sendData(JSON.stringify({
-                action: "create_deal",
-                title: title,
-                amount: amount
+                action: "pay_stars",
+                title: deal.title,
+                amount: deal.amount
             }));
 
-            // Очищаем поля
-            titleInput.value = '';
-            amountInput.value = '';
+            tg.close();
+        }
 
-            tg.showAlert("Сделка создана и добавлена в ваш профиль!");
-        });
-
-        // Загружаем сделки при открытии
         loadDeals();
     </script>
 </body>
