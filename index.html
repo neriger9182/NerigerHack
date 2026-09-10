@@ -13,7 +13,7 @@
             --text-main: #ffffff;
             --text-secondary: #8a99ad;
             --border-color: #232d3f;
-            --success-color: #00c853;
+            --star-color: #eab308;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
@@ -24,13 +24,13 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); display: flex; padding: 10px 0; border-top: 1px solid var(--border-color); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); display: flex; padding: 12px 0; border-top: 1px solid var(--border-color); z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 11px; width: 33%; cursor: pointer; }
-        .nav-item.active { color: var(--accent-color); }
+        .nav-item.active { color: var(--accent-color); font-weight: bold; }
 
         .card { background-color: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-color); }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background-color: var(--accent-color); color: #fff; font-weight: bold; cursor: pointer; }
-        .btn-pay { background-color: #eab308; color: #000; margin-top: 8px; }
+        .btn-pay { background-color: var(--star-color); color: #000; margin-top: 8px; width: 100%; }
         .btn-secondary { background-color: #232d3f; color: #fff; }
 
         .form-group { margin-bottom: 14px; }
@@ -38,7 +38,7 @@
         .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: #fff; }
 
         .deal-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); }
-        .modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 16px; }
+        .modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 16px; z-index: 2000; }
         .modal.active { display: flex; }
         .modal-content { background: var(--card-bg); border-radius: 16px; padding: 20px; width: 100%; }
     </style>
@@ -55,7 +55,7 @@
         <div id="tab-deals" class="tab-content active">
             <button class="btn" onclick="openModal('create-modal')">➕ Создать сделку</button>
             <div class="card" style="margin-top: 16px;">
-                <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px;">Мои сделки</div>
+                <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px;">Активные сделки</div>
                 <div id="deals-list"><p style="color: var(--text-secondary); font-size: 13px;">У вас нет активных сделок.</p></div>
             </div>
         </div>
@@ -64,8 +64,8 @@
         <div id="tab-wallet" class="tab-content">
             <div class="card" style="text-align: center;">
                 <span style="color: var(--text-secondary);">Оплата через</span>
-                <h2 style="color: var(--accent-color); margin: 10px 0;">Telegram Stars ⭐</h2>
-                <p style="font-size: 12px; color: var(--text-secondary);">Оплата счетов происходит напрямую через Telegram.</p>
+                <h2 style="color: var(--star-color); margin: 10px 0;">Telegram Stars ⭐</h2>
+                <p style="font-size: 12px; color: var(--text-secondary);">Оплата счетов происходит напрямую через системные чеки Telegram.</p>
             </div>
         </div>
 
@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <!-- Модалка -->
+    <!-- Модалка создания сделки -->
     <div id="create-modal" class="modal">
         <div class="modal-content">
             <h3>Создание сделки</h3><br>
@@ -98,7 +98,7 @@
         </div>
     </div>
 
-    <!-- Навигация -->
+    <!-- Нижняя навигация -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('deals', this)"><span>Сделки</span></div>
         <div class="nav-item" onclick="switchTab('wallet', this)"><span>Кошелек</span></div>
@@ -127,7 +127,7 @@
 
         function loadDeals() {
             const list = document.getElementById('deals-list');
-            const deals = JSON.parse(localStorage.getItem('frz_deals_v2') || '[]');
+            const deals = JSON.parse(localStorage.getItem('frz_v3_deals') || '[]');
 
             if (deals.length === 0) {
                 list.innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">У вас нет активных сделок.</p>';
@@ -141,7 +141,7 @@
                 item.innerHTML = `
                     <div style="display: flex; justify-content: space-between;">
                         <strong>${deal.title}</strong>
-                        <span style="color: #eab308; font-weight: bold;">⭐ ${deal.amount} Stars</span>
+                        <span style="color: var(--star-color); font-weight: bold;">⭐ ${deal.amount} Stars</span>
                     </div>
                     <button class="btn btn-pay" onclick="payDeal(${index})">Оплатить ⭐ ${deal.amount}</button>
                 `;
@@ -154,13 +154,13 @@
             const amount = document.getElementById('deal-amount').value.trim();
 
             if (!title || !amount) {
-                tg.showAlert("Заполните поля!");
+                tg.showAlert("Заполните все поля!");
                 return;
             }
 
-            const deals = JSON.parse(localStorage.getItem('frz_deals_v2') || '[]');
+            const deals = JSON.parse(localStorage.getItem('frz_v3_deals') || '[]');
             deals.unshift({ title, amount });
-            localStorage.setItem('frz_deals_v2', JSON.stringify(deals));
+            localStorage.setItem('frz_v3_deals', JSON.stringify(deals));
 
             closeModal('create-modal');
             document.getElementById('deal-title').value = '';
@@ -169,7 +169,7 @@
         }
 
         function payDeal(index) {
-            const deals = JSON.parse(localStorage.getItem('frz_deals_v2') || '[]');
+            const deals = JSON.parse(localStorage.getItem('frz_v3_deals') || '[]');
             const deal = deals[index];
 
             tg.sendData(JSON.stringify({
