@@ -70,6 +70,9 @@
         <h1 class="header-title">Мои сделки</h1>
         <button class="btn-main" onclick="openCreateModal()">+ Создать новую сделку</button>
 
+        <!-- Контейнер для отображения созданной сделки -->
+        <div id="deals-container" style="margin-top: 14px;"></div>
+
         <div class="card" style="margin-top: 14px;">
             <div class="card-title">Присоединиться по коду</div>
             <input type="text" id="deal-code-input" placeholder="Введите 6-значный код" class="input-field" style="text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">
@@ -90,10 +93,6 @@
             <div class="wallet-row">
                 <span class="wallet-currency">💵 USDT</span>
                 <span class="wallet-balance">0.00 USDT</span>
-            </div>
-            <div class="wallet-row">
-                <span class="wallet-currency">⭐ Stars</span>
-                <span class="wallet-balance">0 Stars</span>
             </div>
             <div class="wallet-row">
                 <span class="wallet-currency">₽ RUB</span>
@@ -151,7 +150,7 @@
 
         <div class="card faq-item">
             <div class="faq-q">Какие валюты поддерживаются?</div>
-            <div class="faq-a">Вы можете совершать сделки в TON, USDT, Telegram Stars и RUB (рубли).</div>
+            <div class="faq-a">Вы можете совершать сделки в TON, USDT и RUB (рубли).</div>
         </div>
     </div>
 
@@ -170,7 +169,6 @@
             <select id="deal-currency" class="input-field">
                 <option value="ton">💎 TON</option>
                 <option value="usdt">💵 USDT</option>
-                <option value="stars">⭐ Telegram Stars</option>
                 <option value="rub">₽ RUB</option>
             </select>
 
@@ -226,21 +224,55 @@
         function openCreateModal() { document.getElementById('create-modal').classList.add('active'); }
         function closeCreateModal() { document.getElementById('create-modal').classList.remove('active'); }
 
+        // Генератор 6-значного кода
+        function generateCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Создание сделки и вывод карточки прямо в Mini App
         function submitCreate() {
-            const title = document.getElementById('deal-title').value.trim();
-            const price = document.getElementById('deal-price').value.trim();
+            const title = document.getElementById('deal-title').value;
+            const price = document.getElementById('deal-price').value;
             const currency = document.getElementById('deal-currency').value;
 
-            if(!title || !price || price <= 0) {
-                tg.showAlert("Пожалуйста, заполните все поля корректно");
+            if (!title || !price || price <= 0) {
+                tg.showAlert("Заполните все поля корректно");
                 return;
             }
 
-            const cleanTitle = encodeURIComponent(title.replace(/_/g, " "));
-            const link = `https://t.me/${BOT_USERNAME}?start=create_${cleanTitle}_${price}_${currency}`;
-            
-            tg.openTelegramLink(link);
-            tg.close();
+            const code = generateCode();
+            const now = new Date().toLocaleString("ru-RU");
+            const sellerName = window.Telegram?.WebApp?.initDataUnsafe?.user?.username 
+                ? '@' + window.Telegram.WebApp.initDataUnsafe.user.username 
+                : 'Вы';
+
+            closeCreateModal();
+
+            // Отрисовка карточки
+            const container = document.getElementById('deals-container');
+            container.innerHTML = `
+                <div style="background:#ffffff; border-radius:16px; padding:20px; color:#000; text-align:center; font-family:sans-serif; margin-bottom:14px;">
+                    <div style="font-size:32px; font-weight:bold; margin-bottom:15px;">${price} ${currency.toUpperCase()}</div>
+                    
+                    <div style="text-align:left; font-size:14px; line-height:2; margin-bottom:20px;">
+                        <div><b>Статус:</b> <span style="color:#e67e22;">Ожидание второй стороны</span></div>
+                        <div><b>Продавец:</b> ${sellerName}</div>
+                        <div><b>Покупатель:</b> Покупатель не присоединился</div>
+                        <div><b>Создана:</b> ${now}</div>
+                        <div style="font-size:18px; margin-top:10px;"><b>Код:</b> <mark style="background:#f1f1f1; padding:4px 8px; border-radius:6px;">${code}</mark></div>
+                    </div>
+
+                    <button onclick="navigator.clipboard.writeText('https://t.me/${BOT_USERNAME}?start=code_${code}'); tg.showAlert('Ссылка скопирована!');" 
+                            style="width:100%; background:#2481cc; color:#fff; border:none; padding:14px; border-radius:12px; font-weight:bold; font-size:15px; cursor:pointer;">
+                        Скопировать ссылку для второй стороны
+                    </button>
+                </div>
+            `;
         }
 
         function joinDeal() {
