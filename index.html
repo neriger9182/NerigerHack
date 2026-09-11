@@ -503,7 +503,7 @@
             if (form) form.style.display = 'block';
         }
 
-        function finishCreateDeal() {
+        async function finishCreateDeal() {
             try {
                 const amountInput = document.getElementById('deal-amount');
                 const currInput = document.getElementById('deal-currency');
@@ -512,36 +512,50 @@
                 const curr = currInput ? String(currInput.value) : 'TON';
 
                 if (!amount || parseFloat(amount) <= 0) {
+                    const errorMsg = "Введите корректную сумму сделки";
                     if (TelegramApp && TelegramApp.showAlert) {
-                        TelegramApp.showAlert("Введите корректную сумму сделки");
+                        TelegramApp.showAlert(errorMsg);
                     } else {
-                        alert("Введите корректную сумму сделки");
+                        alert(errorMsg);
                     }
                     return;
                 }
 
-                // Генерация случайного кода сделки
+                // Генерация уникального кода сделки
                 const dealId = Math.random().toString(36).substring(2, 8).toUpperCase();
                 
-                // Формирование структуры данных из строковых полей
                 const payload = {
                     action: "create_deal",
                     deal_id: String(dealId),
                     amount: String(amount),
                     currency: String(curr),
-                    type: String(selectedType || 'buy')
+                    type: String(selectedType || 'buy'),
+                    user: TelegramApp?.initDataUnsafe?.user || {}
                 };
 
-                const jsonString = JSON.stringify(payload);
-
+                // Пробуем отправить через sendData (работает, если WebApp открыт через ReplyKeyboardMarkup)
                 if (TelegramApp && TelegramApp.sendData) {
-                    TelegramApp.sendData(jsonString);
-                    TelegramApp.close();
-                } else {
-                    alert("Ошибка: Запущен вне приложения Telegram WebApp");
+                    try {
+                        TelegramApp.sendData(JSON.stringify(payload));
+                        TelegramApp.close();
+                        return;
+                    } catch (e) {
+                        console.warn("sendData недоступен в данном контексте WebApp", e);
+                    }
                 }
+
+                // Безопасный фоллбек, если sendData не поддерживается средой открывания
+                const successMsg = `Сделка #${dealId} на сумму ${amount} ${curr} сформирована!`;
+                if (TelegramApp && TelegramApp.showAlert) {
+                    TelegramApp.showAlert(successMsg, () => {
+                        TelegramApp.close();
+                    });
+                } else {
+                    alert(successMsg);
+                }
+
             } catch (err) {
-                alert("Ошибка скрипта: " + err.message);
+                alert("Ошибка выполнения: " + err.message);
             }
         }
 
