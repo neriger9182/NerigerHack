@@ -40,7 +40,7 @@
 
         /* Нижнее меню навигации */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #161b22; display: flex; justify-content: space-around; padding: 10px 0 16px 0; border-top: 1px solid var(--border-color); z-index: 100; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 11px; font-weight: 700; border: none; background: none; width: 33%; cursor: pointer; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 11px; font-weight: 700; border: none; background: none; width: 25%; cursor: pointer; }
         .nav-btn.active { color: var(--accent-btn); }
         .nav-btn svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 4px; }
 
@@ -54,6 +54,13 @@
         .faq-item { margin-bottom: 12px; }
         .faq-q { font-weight: 700; font-size: 15px; color: var(--accent-btn); margin-bottom: 4px; }
         .faq-a { font-size: 14px; color: var(--text-sub); line-height: 1.4; }
+
+        /* Стили Кошелька */
+        .wallet-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .wallet-row:last-child { border-bottom: none; }
+        .wallet-currency { font-weight: 700; font-size: 16px; }
+        .wallet-balance { font-weight: 800; font-size: 16px; color: var(--success-green); }
+        .wallet-actions { display: flex; gap: 10px; margin-top: 12px; }
     </style>
 </head>
 <body>
@@ -67,6 +74,36 @@
             <div class="card-title">Присоединиться по коду</div>
             <input type="text" id="deal-code-input" placeholder="Введите 6-значный код" class="input-field" style="text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">
             <button class="btn-sub" onclick="joinDeal()">Войти в сделку</button>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: КОШЕЛЕК -->
+    <div id="tab-wallet" class="tab-content">
+        <h1 class="header-title">Кошелёк</h1>
+
+        <div class="card">
+            <div class="card-title">Балансы валют</div>
+            <div class="wallet-row">
+                <span class="wallet-currency">💎 TON</span>
+                <span class="wallet-balance">0.00 TON</span>
+            </div>
+            <div class="wallet-row">
+                <span class="wallet-currency">💵 USDT</span>
+                <span class="wallet-balance">0.00 USDT</span>
+            </div>
+            <div class="wallet-row">
+                <span class="wallet-currency">⭐ Stars</span>
+                <span class="wallet-balance">0 Stars</span>
+            </div>
+            <div class="wallet-row">
+                <span class="wallet-currency">₽ RUB</span>
+                <span class="wallet-balance">0.00 ₽</span>
+            </div>
+        </div>
+
+        <div class="wallet-actions">
+            <button class="btn-main" onclick="walletAction('deposit')">💳 Пополнить</button>
+            <button class="btn-sub" onclick="walletAction('withdraw')">📤 Вывести</button>
         </div>
     </div>
 
@@ -148,6 +185,10 @@
             <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
             Сделки
         </button>
+        <button class="nav-btn" id="btn-nav-wallet" onclick="switchTab('wallet')">
+            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            Кошелёк
+        </button>
         <button class="nav-btn" id="btn-nav-profile" onclick="switchTab('profile')">
             <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             Профиль
@@ -212,6 +253,11 @@
             const link = `https://t.me/${BOT_USERNAME}?start=code_${code}`;
             tg.openTelegramLink(link);
             tg.close();
+        }
+
+        function walletAction(type) {
+            const actionText = type === 'deposit' ? 'пополнения' : 'вывода';
+            tg.showAlert(`Обратитесь к гаранту @freezers1 для ${actionText} средств.`);
         }
     </script>
 </body>
