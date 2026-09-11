@@ -93,7 +93,12 @@
       cursor: pointer;
     }
 
-    .deals-grid {
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .deals-grid, .profile-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
@@ -108,8 +113,8 @@
       cursor: pointer;
     }
 
-    .stat-card h3 { font-size: 16px; font-weight: 700; }
-    .stat-card p { font-size: 12px; color: var(--subtext-color); }
+    .stat-card h3 { font-size: 18px; font-weight: 800; }
+    .stat-card p { font-size: 12px; color: var(--subtext-color); margin-top: 2px; }
 
     .join-card {
       background: var(--card-bg);
@@ -342,6 +347,7 @@
 
   <div class="container">
 
+    <!-- СДЕЛКИ -->
     <div id="page-deals" class="tab-page active">
       <h1 class="page-title">Мои сделки</h1>
 
@@ -351,11 +357,11 @@
 
       <div class="deals-grid">
         <div class="stat-card" onclick="openActiveDealsModal()">
-          <h3 id="active-deals-count-title">Активные (0)</h3>
-          <p>Текущие сделки</p>
+          <h3 id="active-deals-count-title">0</h3>
+          <p>Активные сделки</p>
         </div>
         <div class="stat-card" onclick="alert('История пуста')">
-          <h3>История</h3>
+          <h3>0</h3>
           <p>Завершённые</p>
         </div>
       </div>
@@ -376,6 +382,7 @@
       </div>
     </div>
 
+    <!-- КОШЕЛЬКИ -->
     <div id="page-wallets" class="tab-page">
       <h1 class="page-title">Мои кошельки</h1>
 
@@ -396,10 +403,15 @@
           </div>
         </div>
 
-        <button class="btn-primary" onclick="redirectToChat()">Пополнить</button>
+        <!-- Кнопки Пополнить и Вывести -->
+        <div class="btn-group">
+          <button class="btn-primary" onclick="redirectToChat()">Пополнить</button>
+          <button class="btn-secondary" onclick="openWithdrawModal()">Вывести</button>
+        </div>
       </div>
     </div>
 
+    <!-- ЛИДЕРЫ -->
     <div id="page-leaders" class="tab-page">
       <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="font-size: 22px; font-weight: 900;">Топ участников</h1>
@@ -418,11 +430,32 @@
       </div>
     </div>
 
+    <!-- ПРОФИЛЬ -->
     <div id="page-profile" class="tab-page">
       <div style="text-align: center; margin-bottom: 20px;">
         <div id="prof-avatar" style="width: 60px; height: 60px; background: #ff5252; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; margin: 0 auto 10px;">F</div>
         <h2 id="prof-name" style="font-size: 18px; font-weight: 800;">User</h2>
         <p id="prof-tag" style="font-size: 13px; color: var(--primary-blue);">@username</p>
+      </div>
+
+      <!-- Статистика пользователя -->
+      <div class="profile-grid">
+        <div class="stat-card">
+          <h3 id="prof-stat-active">0</h3>
+          <p>Активные</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="prof-stat-completed">0</h3>
+          <p>Завершённые</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="prof-stat-total">0</h3>
+          <p>Все сделки</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="prof-stat-refunds">0</h3>
+          <p>Возвраты</p>
+        </div>
       </div>
 
       <div class="wallet-card">
@@ -432,6 +465,7 @@
       </div>
     </div>
 
+    <!-- ЭКРАН ПРОСМОТРА СДЕЛКИ -->
     <div id="page-deal-view" class="tab-page">
       <div style="font-size: 13px; color: var(--primary-blue); margin-bottom: 12px; cursor: pointer;" onclick="switchTab('deals', document.querySelectorAll('.nav-tab')[0])">← Назад к сделкам</div>
       <div class="deal-status-card">
@@ -458,6 +492,7 @@
 
   </div>
 
+  <!-- МОДАЛЬНЫЕ ОКНА -->
   <div id="modal-type" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-type')">✕</div>
@@ -534,6 +569,27 @@
     </div>
   </div>
 
+  <!-- Модальное окно вывода средств -->
+  <div id="modal-withdraw" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal('modal-withdraw')">✕</div>
+      <div class="modal-title">Вывод средств</div>
+      <div class="modal-subtitle">Запрос на вывод средств из кошелька</div>
+
+      <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Сумма вывода</label>
+      <div class="amount-input-wrap">
+        <input type="number" id="withdraw-amount" placeholder="0.00">
+        <span id="withdraw-curr-badge" style="font-weight: 800;">STARS</span>
+      </div>
+
+      <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Реквизиты / Адрес кошелька</label>
+      <input type="text" id="withdraw-address" class="code-input" style="text-align: left;" placeholder="Введите адрес или карту">
+
+      <button class="btn-primary" onclick="processWithdrawal()">Отправить заявку</button>
+    </div>
+  </div>
+
+  <!-- Нижняя навигация -->
   <div class="bottom-bar">
     <div class="nav-tab active" onclick="switchTab('deals', this)">
       <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg>
@@ -566,6 +622,7 @@
       'EUR': '€'
     };
 
+    let selectedWalletCurr = 'STARS';
     let dealData = { type: 'Купить', currency: 'STARS', amount: 0, desc: '', code: '' };
     let currentOpenedCode = '';
 
@@ -699,7 +756,9 @@
       const deals = getStoredDeals();
       const count = deals.length;
 
-      document.getElementById('active-deals-count-title').innerText = `Активные (${count})`;
+      document.getElementById('active-deals-count-title').innerText = count;
+      document.getElementById('prof-stat-active').innerText = count;
+      document.getElementById('prof-stat-total').innerText = count;
 
       const mainList = document.getElementById('active-deals-list');
       const modalList = document.getElementById('modal-active-deals-container');
@@ -740,11 +799,35 @@
     }
 
     function selectWalletChip(el, code, name, icon) {
+      selectedWalletCurr = code;
       document.querySelectorAll('.currency-scroll .chip').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       document.getElementById('w-icon').innerText = icon;
       document.getElementById('w-name').innerText = name;
       document.getElementById('w-bal').innerText = '0 ' + code;
+    }
+
+    function openWithdrawModal() {
+      document.getElementById('withdraw-curr-badge').innerText = selectedWalletCurr;
+      openModal('modal-withdraw');
+    }
+
+    function processWithdrawal() {
+      const amt = document.getElementById('withdraw-amount').value;
+      const addr = document.getElementById('withdraw-address').value;
+
+      if (!amt || amt <= 0) {
+        tg.showAlert("Укажите сумму для вывода!");
+        return;
+      }
+      if (!addr) {
+        tg.showAlert("Укажите реквизиты!");
+        return;
+      }
+
+      closeModal('modal-withdraw');
+      tg.showAlert("Заявка на вывод создана! Свяжитесь с гарантом @Freezers1 для подтверждения.");
+      redirectToChat();
     }
 
     function joinByCode() {
