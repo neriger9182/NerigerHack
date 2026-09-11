@@ -243,8 +243,8 @@
             </div>
         </div>
 
-        <button class="btn-blue" onclick="actionWallet('deposit')">Пополнить баланс</button>
-        <button class="btn-light" onclick="actionWallet('withdraw')">Вывести средства</button>
+        <button class="btn-blue" onclick="actionWallet()">Пополнить баланс</button>
+        <button class="btn-light" onclick="actionWallet()">Вывести средства</button>
     </div>
 
     <!-- Вкладка Профиль -->
@@ -327,8 +327,10 @@
     <script>
         const tg = window.Telegram?.WebApp;
         if (tg) {
-            tg.ready();
-            tg.expand();
+            try {
+                tg.ready();
+                tg.expand();
+            } catch(e) {}
         }
 
         const BOT_USERNAME = "freezersdemo2_bot";
@@ -405,12 +407,31 @@
 
             closeModal();
 
-            // Безопасное отправление данных через генерацию ссылки на бота
-            if (tg?.openTelegramLink) {
-                tg.openTelegramLink(`https://t.me/${BOT_USERNAME}?start=${startParam}`);
-                tg.close();
-            } else {
-                window.location.href = `https://t.me/${BOT_USERNAME}?start=${startParam}`;
+            // Попытка отправить через sendData (для обычных кнопок), иначе — переход по глубокой ссылке
+            let sentViaSendData = false;
+            if (tg && tg.sendData) {
+                try {
+                    tg.sendData(JSON.stringify({
+                        action: "create_deal",
+                        deal_id: dealId,
+                        amount: amount,
+                        currency: curr,
+                        type: selectedType
+                    }));
+                    sentViaSendData = true;
+                    tg.close();
+                } catch (e) {
+                    sentViaSendData = false;
+                }
+            }
+
+            if (!sentViaSendData) {
+                if (tg?.openTelegramLink) {
+                    tg.openTelegramLink(`https://t.me/${BOT_USERNAME}?start=${startParam}`);
+                    tg.close();
+                } else {
+                    window.location.href = `https://t.me/${BOT_USERNAME}?start=${startParam}`;
+                }
             }
         }
 
