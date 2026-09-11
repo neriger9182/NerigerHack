@@ -23,11 +23,9 @@
 
         body {
             background-color: var(--fp-bg);
-            /* Текстура сетки на заднем фоне в стиле торговой площадки */
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
+            /* ПОЛУПРОЗРАЧНЫЙ ФОН ИЗ МАЛЕНЬКИХ НАДПИСЕЙ FUNPAY */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60"><text x="15" y="25" fill="rgba(255,255,255,0.04)" font-size="12" font-weight="bold" font-family="sans-serif">funpay</text><text x="75" y="55" fill="rgba(255,255,255,0.04)" font-size="12" font-weight="bold" font-family="sans-serif">funpay</text></svg>');
+            background-repeat: repeat;
             color: var(--fp-text-main);
             padding: 16px;
             padding-bottom: 90px;
@@ -187,8 +185,6 @@
         .wallet-coin-row { display: flex; align-items: center; gap: 12px; }
         .coin-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--fp-primary); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 16px; }
 
-        .checkbox-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--fp-card); border: 1px solid var(--fp-card-border); border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 12px; }
-
         .profile-header { text-align: center; margin-bottom: 16px; }
         .avatar-circle { width: 70px; height: 70px; border-radius: 50%; background: var(--fp-primary); color: #fff; font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; border: 3px solid var(--fp-card-border); }
         .profile-name { font-size: 18px; font-weight: 800; color: #fff; }
@@ -199,7 +195,6 @@
         .stat-lbl { font-size: 12px; color: var(--fp-text-sub); font-weight: 600; }
         .stat-val { font-size: 18px; font-weight: 800; margin-top: 2px; color: #fff; }
 
-        /* Модальное окно */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.7); display: none; align-items: flex-end; z-index: 200;
@@ -222,7 +217,6 @@
 </head>
 <body>
 
-    <!-- Шапка в стиле FunPay -->
     <div class="fp-header">
         <div class="fp-logo">freezers<span>.io</span></div>
         <div class="fp-user-pill">
@@ -231,7 +225,6 @@
         </div>
     </div>
 
-    <!-- Вкладка Сделки -->
     <div id="tab-deals" class="tab-content active">
         <h1 class="page-title">Мои сделки</h1>
         <button class="btn-blue" onclick="openModal()">+ Создать сделку</button>
@@ -250,7 +243,7 @@
 
         <div class="card">
             <div style="font-size: 13px; color: var(--fp-text-sub); font-weight: 600; margin-bottom: 6px;">Присоединиться к заказу</div>
-            <input type="text" id="deal-code-input" class="input-box" placeholder="Введит код (напр. ABC123)" style="text-align: center; font-weight: bold; font-size: 16px; letter-spacing: 2px;">
+            <input type="text" id="deal-code-input" class="input-box" placeholder="Введите код (напр. ABC123)" style="text-align: center; font-weight: bold; font-size: 16px; letter-spacing: 2px;">
             <button class="btn-light" style="margin-top: 10px;" onclick="joinDeal()">Открыть заказ</button>
         </div>
 
@@ -259,7 +252,6 @@
         </div>
     </div>
 
-    <!-- Вкладка Кошельки -->
     <div id="tab-wallet" class="tab-content">
         <h1 class="page-title">Баланс и кошельки</h1>
         <div class="currency-selector">
@@ -284,7 +276,6 @@
         <button class="btn-light" onclick="actionWallet('withdraw')">Вывести средства</button>
     </div>
 
-    <!-- Вкладка Профиль -->
     <div id="tab-profile" class="tab-content">
         <div class="profile-header">
             <div class="avatar-circle" id="user-avatar">F</div>
@@ -313,7 +304,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно создания сделки -->
     <div id="modal-create" class="modal-overlay">
         <div class="modal-sheet">
             <div class="modal-header">
@@ -341,7 +331,6 @@
         </div>
     </div>
 
-    <!-- Навигация -->
     <div class="bottom-nav">
         <button class="nav-item active" id="nav-deals" onclick="switchTab('deals')">
             <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
