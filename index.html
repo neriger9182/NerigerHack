@@ -423,7 +423,7 @@
         tg.ready();
         tg.expand();
 
-        const BOT_USERNAME = "freezersdemo2_bot";
+        const BOT_USERNAME = "freezersdemi2_bot";
         let selectedType = "buy";
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -435,6 +435,20 @@
             document.getElementById('user-avatar').innerText = (u.first_name || 'F')[0].toUpperCase();
             document.getElementById('user-username').innerText = username;
             document.getElementById('top-username').innerText = username;
+        }
+
+        function sendDealToBot(dealId, amount, currency) {
+            const data = {
+                action: "create_deal",
+                deal_id: dealId,
+                amount: amount,
+                currency: currency
+            };
+            
+            // Передаем данные сделки обратно в Telegram бот
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.sendData(JSON.stringify(data));
+            }
         }
 
         function switchTab(tabName) {
@@ -489,6 +503,10 @@
             }
 
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            // Отправляем данные сделки боту для сохранения в БД
+            sendDealToBot(code, amount, curr);
+
             document.getElementById('modal-create').classList.remove('active');
 
             const renderArea = document.getElementById('deals-render-area');
