@@ -49,7 +49,7 @@
                 <option value="rub">₽ RUB</option>
             </select>
 
-            <button class="btn-main" onclick="submitCreate()">Создать сделку</button>
+            <button class="btn-main" onclick="submitCreate()">Получить код</button>
             <button class="btn-sub" onclick="closeCreateModal()">Отмена</button>
         </div>
     </div>
@@ -57,6 +57,8 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
+
+        const BOT_USERNAME = "freezersdemo2_bot"; 
 
         function openCreateModal() { document.getElementById('create-modal').classList.add('active'); }
         function closeCreateModal() { document.getElementById('create-modal').classList.remove('active'); }
@@ -71,9 +73,8 @@
                 return;
             }
 
-            // Прямой переход через deep-link бота (не зависит от ограничений Telegram)
             const cleanTitle = encodeURIComponent(title.replace(/_/g, " "));
-            const link = `https://t.me/freezersdemi2_bot?start=create_${cleanTitle}_${price}_${currency}`;
+            const link = `https://t.me/${BOT_USERNAME}?start=create_${cleanTitle}_${price}_${currency}`;
             
             tg.openTelegramLink(link);
             tg.close();
@@ -83,7 +84,7 @@
             const code = document.getElementById('deal-code-input').value.trim().toUpperCase();
             if(!code) return;
 
-            const link = `https://t.me/freezersdemi2_bot?start=code_${code}`;
+            const link = `https://t.me/${BOT_USERNAME}?start=code_${code}`;
             tg.openTelegramLink(link);
             tg.close();
         }
