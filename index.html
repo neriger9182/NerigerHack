@@ -475,11 +475,18 @@
         }
 
         function finishCreateDeal() {
-            const amount = document.getElementById('deal-amount').value;
-            const curr = document.getElementById('deal-currency').value;
+            const amountInput = document.getElementById('deal-amount');
+            const currInput = document.getElementById('deal-currency');
 
-            if (!amount || amount <= 0) {
-                tg.showAlert("Введите корректную сумму");
+            const amount = amountInput ? amountInput.value.trim() : '';
+            const curr = currInput ? currInput.value : 'TON';
+
+            if (!amount || parseFloat(amount) <= 0) {
+                if (tg.showAlert) {
+                    tg.showAlert("Введите корректную сумму");
+                } else {
+                    alert("Введите корректную сумму");
+                }
                 return;
             }
 
@@ -490,11 +497,18 @@
                 action: "create_deal",
                 deal_id: dealId,
                 amount: amount,
-                currency: curr
+                currency: curr,
+                type: selectedType
             };
 
-            // Отправка данных боту в Python и закрытие WebApp
-            tg.sendData(JSON.stringify(data));
+            try {
+                // Передача данных боту
+                tg.sendData(JSON.stringify(data));
+                // Закрытие приложения WebApp
+                tg.close();
+            } catch (err) {
+                alert("Ошибка при передаче данных в Telegram: " + err.message);
+            }
         }
 
         function joinDeal() {
