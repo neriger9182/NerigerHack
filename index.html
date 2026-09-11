@@ -34,7 +34,6 @@
       overflow-x: hidden;
     }
 
-    /* Фоны с повторяющейся надписью FUNPAY */
     body::before {
       content: "FUNPAY  FUNPAY  FUNPAY  FUNPAY\A FUNPAY  FUNPAY  FUNPAY  FUNPAY\A FUNPAY  FUNPAY  FUNPAY  FUNPAY\A FUNPAY  FUNPAY  FUNPAY  FUNPAY";
       white-space: pre;
@@ -65,7 +64,6 @@
       margin-bottom: 16px;
     }
 
-    /* Кнопки */
     .btn-primary {
       background: var(--primary-blue);
       color: #fff;
@@ -95,7 +93,6 @@
       cursor: pointer;
     }
 
-    /* Карточки сделок */
     .deals-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -149,7 +146,6 @@
     }
     .info-banner a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
 
-    /* Нижнее меню */
     .bottom-bar {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -175,7 +171,6 @@
     .nav-tab.active { color: var(--primary-blue); font-weight: 600; }
     .nav-tab svg { width: 22px; height: 22px; fill: currentColor; }
 
-    /* Кошельки */
     .currency-scroll {
       display: flex;
       gap: 8px;
@@ -209,7 +204,6 @@
       margin-bottom: 16px;
     }
 
-    /* Модальные окна */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -283,7 +277,6 @@
       margin-bottom: 16px;
     }
 
-    /* Предупреждение о безопасности */
     .safety-box {
       background: #fff5f5;
       border: 1px solid #ffe3e3;
@@ -305,7 +298,6 @@
       line-height: 1.4;
     }
 
-    /* Карточка созданной сделки */
     .deal-status-card {
       background: var(--card-bg);
       border-radius: 20px;
@@ -330,13 +322,26 @@
       border-bottom: 1px solid var(--border-color);
       font-size: 13px;
     }
+
+    .deal-list-item {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .deal-list-item-title { font-size: 15px; font-weight: 800; }
+    .deal-list-item-sub { font-size: 12px; color: var(--subtext-color); margin-top: 2px; }
   </style>
 </head>
 <body>
 
   <div class="container">
 
-    <!-- СДЕЛКИ -->
     <div id="page-deals" class="tab-page active">
       <h1 class="page-title">Мои сделки</h1>
 
@@ -345,14 +350,19 @@
       </button>
 
       <div class="deals-grid">
-        <div class="stat-card" onclick="alert('У вас 0 активных сделок')">
-          <h3>Активные</h3>
+        <div class="stat-card" onclick="openActiveDealsModal()">
+          <h3 id="active-deals-count-title">Активные (0)</h3>
           <p>Текущие сделки</p>
         </div>
         <div class="stat-card" onclick="alert('История пуста')">
           <h3>История</h3>
           <p>Завершённые</p>
         </div>
+      </div>
+
+      <div id="active-deals-section" style="display: none; margin-bottom: 16px;">
+        <div style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Текущие сделки</div>
+        <div id="active-deals-list"></div>
       </div>
 
       <div class="join-card">
@@ -366,24 +376,23 @@
       </div>
     </div>
 
-    <!-- КОШЕЛЬКИ -->
     <div id="page-wallets" class="tab-page">
       <h1 class="page-title">Мои кошельки</h1>
 
       <div class="currency-scroll">
-        <div class="chip active" onclick="selectWalletChip(this, 'TON', 'Toncoin', '💎')">💎 TON</div>
+        <div class="chip active" onclick="selectWalletChip(this, 'STARS', 'Telegram Stars', '⭐')">⭐ STARS</div>
+        <div class="chip" onclick="selectWalletChip(this, 'TON', 'Toncoin', '💎')">💎 TON</div>
         <div class="chip" onclick="selectWalletChip(this, 'USDT', 'Tether', '💵')">💵 USDT</div>
-        <div class="chip" onclick="selectWalletChip(this, 'STARS', 'Telegram Stars', '⭐')">⭐ STARS</div>
         <div class="chip" onclick="selectWalletChip(this, 'RUB', 'Рубль', '₽')">₽ RUB</div>
         <div class="chip" onclick="selectWalletChip(this, 'BTC', 'Bitcoin', '₿')">₿ BTC</div>
       </div>
 
       <div class="wallet-card">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-          <div id="w-icon" style="font-size: 32px;">💎</div>
+          <div id="w-icon" style="font-size: 32px;">⭐</div>
           <div>
-            <h4 id="w-name" style="font-size: 16px; font-weight: 700;">Toncoin</h4>
-            <p id="w-bal" style="font-size: 12px; color: var(--subtext-color);">0 TON</p>
+            <h4 id="w-name" style="font-size: 16px; font-weight: 700;">Telegram Stars</h4>
+            <p id="w-bal" style="font-size: 12px; color: var(--subtext-color);">0 STARS</p>
           </div>
         </div>
 
@@ -391,7 +400,6 @@
       </div>
     </div>
 
-    <!-- ЛИДЕРЫ -->
     <div id="page-leaders" class="tab-page">
       <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="font-size: 22px; font-weight: 900;">Топ участников</h1>
@@ -410,7 +418,6 @@
       </div>
     </div>
 
-    <!-- ПРОФИЛЬ -->
     <div id="page-profile" class="tab-page">
       <div style="text-align: center; margin-bottom: 20px;">
         <div id="prof-avatar" style="width: 60px; height: 60px; background: #ff5252; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; margin: 0 auto 10px;">F</div>
@@ -425,18 +432,16 @@
       </div>
     </div>
 
-    <!-- Экран просмотра созданной сделки -->
     <div id="page-deal-view" class="tab-page">
-      <div style="font-size: 13px; color: var(--primary-blue); margin-bottom: 12px; cursor: pointer;" onclick="switchTab('deals', document.querySelectorAll('.nav-tab')[0])">← Назад</div>
+      <div style="font-size: 13px; color: var(--primary-blue); margin-bottom: 12px; cursor: pointer;" onclick="switchTab('deals', document.querySelectorAll('.nav-tab')[0])">← Назад к сделкам</div>
       <div class="deal-status-card">
-        <!-- Заменено по умолчанию с 💎 на ⭐ -->
         <div style="font-size: 32px;" id="dv-icon">⭐</div>
-        <div class="deal-amount" id="dv-amount">5 STARS</div>
+        <div class="deal-amount" id="dv-amount">0 STARS</div>
         <div class="deal-desc" id="dv-desc">Описание сделки...</div>
 
         <div class="deal-row">
           <span style="color: var(--subtext-color);">Статус</span>
-          <span style="font-weight: 700; color: var(--primary-blue);">Ожидание второй стороны</span>
+          <span style="font-weight: 700; color: var(--primary-blue);" id="dv-status">Ожидание второй стороны</span>
         </div>
         <div class="deal-row">
           <span style="color: var(--subtext-color);">Покупатель</span>
@@ -444,7 +449,7 @@
         </div>
         <div class="deal-row">
           <span style="color: var(--subtext-color);">Код</span>
-          <span style="font-weight: 700;" id="dv-code">88A807</span>
+          <span style="font-weight: 700;" id="dv-code">------</span>
         </div>
 
         <button class="btn-primary" style="margin-top: 20px;" onclick="copyDealLink()">Скопировать ссылку для второй стороны</button>
@@ -453,15 +458,11 @@
 
   </div>
 
-  <!-- МОДАЛЬНЫЕ ОКНА -->
-
-  <!-- 1. Купить / Продать -->
   <div id="modal-type" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-type')">✕</div>
       <div class="modal-title">Создать сделку</div>
       <div class="modal-subtitle">Выберите тип сделки</div>
-      
       <div class="currency-item" style="margin-bottom: 10px;" onclick="selectType('Купить')">
         <span style="color: var(--primary-blue);">↓</span> Купить
       </div>
@@ -471,17 +472,15 @@
     </div>
   </div>
 
-  <!-- 2. Валюта -->
   <div id="modal-currency" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-currency')">✕</div>
       <div class="modal-title">Выберите валюту</div>
       <div class="modal-subtitle">Поддерживаемые сети</div>
-
       <div class="currency-grid">
+        <div class="currency-item" onclick="selectCurr('STARS')">⭐ STARS</div>
         <div class="currency-item" onclick="selectCurr('TON')">💎 TON</div>
         <div class="currency-item" onclick="selectCurr('USDT')">💵 USDT</div>
-        <div class="currency-item" onclick="selectCurr('STARS')">⭐ STARS</div>
         <div class="currency-item" onclick="selectCurr('RUB')">₽ RUB</div>
         <div class="currency-item" onclick="selectCurr('BTC')">₿ BTC</div>
         <div class="currency-item" onclick="selectCurr('EUR')">€ EUR</div>
@@ -489,40 +488,32 @@
     </div>
   </div>
 
-  <!-- 3. Сумма -->
   <div id="modal-amount" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-amount')">✕</div>
       <div class="modal-title">Создать сделку</div>
       <div class="modal-subtitle">Введите сумму</div>
-
       <div class="amount-input-wrap">
         <input type="number" id="deal-amount-input" placeholder="0.00" step="any">
         <span id="selected-curr-badge" style="font-weight: 800;">STARS</span>
       </div>
-
       <button class="btn-primary" onclick="goToDescription()">Далее</button>
     </div>
   </div>
 
-  <!-- 4. Описание товара -->
   <div id="modal-desc" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-desc')">✕</div>
       <div class="modal-title">Создать сделку</div>
       <div class="modal-subtitle">Описание товара</div>
-
-      <textarea id="deal-desc-input" class="desc-input" placeholder="Иначе просто опишите товар, например: 2 Crystals and 1 Butterfly"></textarea>
-
+      <textarea id="deal-desc-input" class="desc-input" placeholder="Опишите товар..."></textarea>
       <button class="btn-primary" onclick="goToSafety()">Далее</button>
     </div>
   </div>
 
-  <!-- 5. Безопасность и Таймер 7 секунд -->
   <div id="modal-safety" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-safety')">✕</div>
-      
       <div class="safety-box">
         <div class="safety-title">⚠️ ВНИМАНИЕ! ВАЖНАЯ ИНФОРМАЦИЯ О БЕЗОПАСНОСТИ</div>
         <div class="safety-item">Участились случаи мошенничества!</div>
@@ -530,12 +521,19 @@
         <div class="safety-item">✅ Передавайте подарок ТОЛЬКО на аккаунт <strong style="color:var(--primary-blue);">@Freezers1</strong></div>
         <div class="safety-item">❌ НИКОГДА не отправляйте напрямую покупателю.</div>
       </div>
-
       <button id="safety-btn" class="btn-primary" disabled style="opacity: 0.6;">Прочитайте — 7с</button>
     </div>
   </div>
 
-  <!-- Нижнее меню -->
+  <div id="modal-active-list" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal('modal-active-list')">✕</div>
+      <div class="modal-title">Активные сделки</div>
+      <div class="modal-subtitle">Все ваши текущие сделки</div>
+      <div id="modal-active-deals-container" style="margin-top: 12px;"></div>
+    </div>
+  </div>
+
   <div class="bottom-bar">
     <div class="nav-tab active" onclick="switchTab('deals', this)">
       <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg>
@@ -559,10 +557,31 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Валюта по умолчанию - STARS
-    let dealData = { type: 'Купить', currency: 'STARS', amount: 0, desc: '', code: '' };
+    const currencyIcons = {
+      'STARS': '⭐',
+      'TON': '💎',
+      'USDT': '💵',
+      'RUB': '₽',
+      'BTC': '₿',
+      'EUR': '€'
+    };
 
-    // Авто-заполнение профиля
+    let dealData = { type: 'Купить', currency: 'STARS', amount: 0, desc: '', code: '' };
+    let currentOpenedCode = '';
+
+    function getStoredDeals() {
+      try {
+        return JSON.parse(localStorage.getItem('my_deals_list') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveStoredDeals(deals) {
+      localStorage.setItem('my_deals_list', JSON.stringify(deals));
+      renderDealsUI();
+    }
+
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
       const u = tg.initDataUnsafe.user;
       document.getElementById('prof-name').innerText = u.first_name || 'Пользователь';
@@ -627,34 +646,97 @@
 
     function finishDealCreation() {
       closeModal('modal-safety');
-      dealData.code = 'AB' + Math.floor(100 + Math.random() * 900) + 'D';
+      const generatedCode = 'AB' + Math.floor(100 + Math.random() * 900) + 'D';
 
-      // Карта иконок
-      const currencyIcons = {
-        'STARS': '⭐',
-        'TON': '💎',
-        'USDT': '💵',
-        'RUB': '₽',
-        'BTC': '₿',
-        'EUR': '€'
+      const newDeal = {
+        code: generatedCode,
+        amount: dealData.amount,
+        currency: dealData.currency,
+        desc: dealData.desc,
+        type: dealData.type,
+        status: 'Ожидание второй стороны',
+        buyer: '@Freezers1',
+        createdAt: new Date().toLocaleDateString()
       };
 
-      // Принудительно ставим ⭐ для STARS
-      const currentIcon = currencyIcons[dealData.currency] || '⭐';
-      document.getElementById('dv-icon').textContent = currentIcon;
+      const deals = getStoredDeals();
+      deals.unshift(newDeal);
+      saveStoredDeals(deals);
 
-      // Настройка карточки созданной сделки
-      document.getElementById('dv-amount').innerText = `${dealData.amount} ${dealData.currency}`;
-      document.getElementById('dv-desc').innerText = dealData.desc;
-      document.getElementById('dv-code').innerText = dealData.code;
+      showDealView(newDeal);
+    }
+
+    function showDealView(deal) {
+      currentOpenedCode = deal.code;
+      const icon = currencyIcons[deal.currency] || '⭐';
+
+      document.getElementById('dv-icon').innerText = icon;
+      document.getElementById('dv-amount').innerText = `${deal.amount} ${deal.currency}`;
+      document.getElementById('dv-desc').innerText = deal.desc;
+      document.getElementById('dv-code').innerText = deal.code;
+      document.getElementById('dv-buyer').innerText = deal.buyer || '@Freezers1';
+      document.getElementById('dv-status').innerText = deal.status;
 
       switchTab('deal-view', null);
     }
 
+    function openDealByCode(code) {
+      const deals = getStoredDeals();
+      const deal = deals.find(d => d.code === code);
+      if (deal) {
+        closeModal('modal-active-list');
+        showDealView(deal);
+      }
+    }
+
     function copyDealLink() {
-      const link = `https://t.me/freezersdemo2_bot?start=join_${dealData.code}`;
+      const link = `https://t.me/freezersdemo2_bot?start=join_${currentOpenedCode}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Ссылка скопирована!");
+    }
+
+    function renderDealsUI() {
+      const deals = getStoredDeals();
+      const count = deals.length;
+
+      document.getElementById('active-deals-count-title').innerText = `Активные (${count})`;
+
+      const mainList = document.getElementById('active-deals-list');
+      const modalList = document.getElementById('modal-active-deals-container');
+      const section = document.getElementById('active-deals-section');
+
+      if (count === 0) {
+        section.style.display = 'none';
+        mainList.innerHTML = '';
+        modalList.innerHTML = '<p style="text-align:center; color:var(--subtext-color); font-size:14px; padding:20px 0;">У вас нет активных сделок</p>';
+        return;
+      }
+
+      section.style.display = 'block';
+
+      let html = '';
+      deals.forEach(d => {
+        const icon = currencyIcons[d.currency] || '⭐';
+        html += `
+          <div class="deal-list-item" onclick="openDealByCode('${d.code}')">
+            <div>
+              <div class="deal-list-item-title">${icon} ${d.amount} ${d.currency}</div>
+              <div class="deal-list-item-sub">${d.desc} (Код: ${d.code})</div>
+            </div>
+            <div style="font-size:12px; font-weight:700; color:var(--primary-blue);">
+              ${d.status} ›
+            </div>
+          </div>
+        `;
+      });
+
+      mainList.innerHTML = html;
+      modalList.innerHTML = html;
+    }
+
+    function openActiveDealsModal() {
+      renderDealsUI();
+      openModal('modal-active-list');
     }
 
     function selectWalletChip(el, code, name, icon) {
@@ -670,6 +752,8 @@
       if (!code) { tg.showAlert("Введите код!"); return; }
       alert("Запрос на вход отправлен");
     }
+
+    renderDealsUI();
   </script>
 </body>
 </html>
