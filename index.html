@@ -387,7 +387,6 @@
           </div>
         </div>
 
-        <!-- Кнопка Перенос в чат с создателем/гарантом @Freezers1 -->
         <button class="btn-primary" onclick="redirectToChat()">Пополнить</button>
       </div>
     </div>
@@ -430,8 +429,9 @@
     <div id="page-deal-view" class="tab-page">
       <div style="font-size: 13px; color: var(--primary-blue); margin-bottom: 12px; cursor: pointer;" onclick="switchTab('deals', document.querySelectorAll('.nav-tab')[0])">← Назад</div>
       <div class="deal-status-card">
-        <div style="font-size: 32px;" id="dv-icon">💎</div>
-        <div class="deal-amount" id="dv-amount">500 TON</div>
+        <!-- Заменено по умолчанию с 💎 на ⭐ -->
+        <div style="font-size: 32px;" id="dv-icon">⭐</div>
+        <div class="deal-amount" id="dv-amount">5 STARS</div>
         <div class="deal-desc" id="dv-desc">Описание сделки...</div>
 
         <div class="deal-row">
@@ -498,7 +498,7 @@
 
       <div class="amount-input-wrap">
         <input type="number" id="deal-amount-input" placeholder="0.00" step="any">
-        <span id="selected-curr-badge" style="font-weight: 800;">TON</span>
+        <span id="selected-curr-badge" style="font-weight: 800;">STARS</span>
       </div>
 
       <button class="btn-primary" onclick="goToDescription()">Далее</button>
@@ -559,7 +559,8 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    let dealData = { type: 'Купить', currency: 'TON', amount: 0, desc: '', code: '' };
+    // Валюта по умолчанию - STARS
+    let dealData = { type: 'Купить', currency: 'STARS', amount: 0, desc: '', code: '' };
 
     // Авто-заполнение профиля
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -569,7 +570,6 @@
       if (u.username) document.getElementById('prof-tag').innerText = '@' + u.username;
     }
 
-    // Перенос покупателя в чат с вами (@Freezers1)
     function redirectToChat() {
       tg.openTelegramLink('https://t.me/Freezers1');
     }
@@ -585,7 +585,13 @@
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
     function selectType(t) { dealData.type = t; closeModal('modal-type'); openModal('modal-currency'); }
-    function selectCurr(c) { dealData.currency = c; document.getElementById('selected-curr-badge').innerText = c; closeModal('modal-currency'); openModal('modal-amount'); }
+    
+    function selectCurr(c) { 
+      dealData.currency = c; 
+      document.getElementById('selected-curr-badge').innerText = c; 
+      closeModal('modal-currency'); 
+      openModal('modal-amount'); 
+    }
 
     function goToDescription() {
       const amt = document.getElementById('deal-amount-input').value;
@@ -600,7 +606,6 @@
       closeModal('modal-desc');
       openModal('modal-safety');
 
-      // Логика таймера 7 секунд
       let seconds = 7;
       const btn = document.getElementById('safety-btn');
       btn.disabled = true;
@@ -624,19 +629,19 @@
       closeModal('modal-safety');
       dealData.code = 'AB' + Math.floor(100 + Math.random() * 900) + 'D';
 
-      // Карта иконок валют
+      // Карта иконок
       const currencyIcons = {
-        'TON': '💎',
         'STARS': '⭐',
+        'TON': '💎',
         'USDT': '💵',
         'RUB': '₽',
         'BTC': '₿',
         'EUR': '€'
       };
 
-      // Динамическая установка иконки
-      const icon = currencyIcons[dealData.currency] || '⭐';
-      document.getElementById('dv-icon').innerText = icon;
+      // Принудительно ставим ⭐ для STARS
+      const currentIcon = currencyIcons[dealData.currency] || '⭐';
+      document.getElementById('dv-icon').textContent = currentIcon;
 
       // Настройка карточки созданной сделки
       document.getElementById('dv-amount').innerText = `${dealData.amount} ${dealData.currency}`;
@@ -647,7 +652,6 @@
     }
 
     function copyDealLink() {
-      // Заменено YourBotUsername на freezersdemo2_bot
       const link = `https://t.me/freezersdemo2_bot?start=join_${dealData.code}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Ссылка скопирована!");
