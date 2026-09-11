@@ -633,7 +633,8 @@
     }
 
     function copyDealLink() {
-      const link = `https://t.me/YourBotUsername?start=join_${dealData.code}`;
+      // Заменено YourBotUsername на freezersdemo2_bot
+      const link = `https://t.me/freezersdemo2_bot?start=join_${dealData.code}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Ссылка скопирована!");
     }
