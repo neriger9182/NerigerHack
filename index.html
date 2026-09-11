@@ -6,114 +6,43 @@
     <title>freezers</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --text-main: #f0f6fc;
-            --text-sub: #8b949e;
-            --accent-btn: #2f81f7;
-            --border-color: #30363d;
-            --star-gold: #e3b341;
-            --success-green: #3fb950;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root { --bg-color: #0d1117; --card-bg: #161b22; --text-main: #f0f6fc; --text-sub: #8b949e; --accent-btn: #2f81f7; --border-color: #30363d; --success-green: #3fb950; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; padding-bottom: 95px; }
-
-        .header-title { font-size: 26px; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
+        .header-title { font-size: 26px; font-weight: 800; margin-bottom: 16px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
-        .currency-selector { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-        .curr-chip { background: #21262d; color: var(--text-sub); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px solid var(--border-color); }
-        .curr-chip.active { background: var(--accent-btn); color: #fff; border-color: var(--accent-btn); }
-
-        .card { background: var(--card-bg); border-radius: 18px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .card { background: var(--card-bg); border-radius: 18px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border-color); }
         .card-title { font-size: 13px; color: var(--text-sub); margin-bottom: 6px; }
-        .card-value { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-
-        .btn-main { width: 100%; background: var(--accent-btn); color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 8px; text-align: center; }
-        .btn-sub { width: 100%; background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; }
-
-        .profile-header { text-align: center; padding: 20px 0 10px 0; }
-        .avatar-box { width: 80px; height: 80px; background: linear-gradient(135deg, #1f6beb, #238636); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; margin: 0 auto 12px auto; border: 2px solid var(--border-color); }
-        .profile-username { font-size: 22px; font-weight: 800; color: var(--text-main); }
-        .profile-badge { display: inline-flex; align-items: center; gap: 4px; background: #1f6beb22; color: #58a6ff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 12px; margin-top: 6px; border: 1px solid #1f6beb44; }
-
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .stat-box { background: var(--card-bg); padding: 16px; border-radius: 16px; border: 1px solid var(--border-color); }
-        .stat-num { font-size: 22px; font-weight: 800; margin-top: 4px; color: var(--text-main); }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #161b22; display: flex; justify-content: space-around; padding: 12px 0 16px 0; border-top: 1px solid var(--border-color); z-index: 100; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-sub); font-size: 12px; font-weight: 700; cursor: pointer; width: 33%; border: none; background: none; }
-        .nav-btn .nav-icon { font-size: 22px; line-height: 1; }
+        .btn-main { width: 100%; background: var(--accent-btn); color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
+        .btn-sub { width: 100%; background: #21262d; color: var(--text-main); border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #161b22; display: flex; justify-content: space-around; padding: 12px 0 16px 0; border-top: 1px solid var(--border-color); }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 12px; font-weight: 700; border: none; background: none; width: 33%; }
         .nav-btn.active { color: var(--accent-btn); }
-
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; padding: 16px; z-index: 200; }
         .modal.active { display: flex; }
         .modal-body { background: var(--card-bg); border-radius: 20px; padding: 20px; width: 100%; max-width: 360px; border: 1px solid var(--border-color); }
         .input-field { width: 100%; padding: 12px; background: #0d1117; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 15px; margin: 8px 0 14px 0; outline: none; }
-        select.input-field { color: var(--text-main); }
     </style>
 </head>
 <body>
 
-    <!-- Вкладка 1: Сделки -->
     <div id="tab-deals" class="tab-content active">
         <h1 class="header-title">Мои сделки</h1>
-        <button class="btn-main" onclick="openCreateDealModal()">+ Создать сделку</button>
+        <button class="btn-main" onclick="openCreateModal()">+ Создать сделку</button>
 
         <div class="card">
-            <div class="card-title" style="margin-bottom: 10px;">Присоединиться по коду</div>
-            <input type="text" id="deal-code-input" placeholder="Введите 6-значный код" class="input-field" style="text-align: center; font-weight: 700; text-transform: uppercase;">
+            <div class="card-title">Присоединиться по коду</div>
+            <input type="text" id="deal-code-input" placeholder="Введите 6-значный код" class="input-field" style="text-align: center; text-transform: uppercase;">
             <button class="btn-sub" onclick="joinDeal()">Войти в сделку</button>
         </div>
     </div>
 
-    <!-- Вкладка 2: Кошельки -->
-    <div id="tab-wallets" class="tab-content">
-        <h1 class="header-title">Мои кошельки</h1>
-        <div class="currency-selector">
-            <button class="curr-chip active" onclick="selectCurrency('ton', '💎 TON', 'Toncoin', '0 TON', this)">💎 TON</button>
-            <button class="curr-chip" onclick="selectCurrency('usdt', '💵 USDT', 'Tether', '0 USDT', this)">💵 USDT</button>
-            <button class="curr-chip" onclick="selectCurrency('stars', '⭐ STARS', 'Telegram Stars', '0 ⭐', this)">⭐ STARS</button>
-            <button class="curr-chip" onclick="selectCurrency('rub', '₽ RUB', 'Рубли', '0 ₽', this)">₽ RUB</button>
-        </div>
-        <div class="card">
-            <div class="card-title" id="curr-label">Кошелёк TON</div>
-            <div class="card-value" id="curr-value">Toncoin <span style="margin-left: auto; color: var(--text-sub);" id="curr-balance">0 TON</span></div>
-        </div>
-        <button class="btn-main" onclick="openDepositModal()">Пополнить</button>
-        <button class="btn-sub">Вывести</button>
-    </div>
-
-    <!-- Вкладка 3: Профиль -->
-    <div id="tab-profile" class="tab-content">
-        <div class="profile-header">
-            <div class="avatar-box" id="avatar-letter">F</div>
-            <div class="profile-username" id="profile-name">Freezers</div>
-            <div class="profile-badge"><span>🛡️ Проверен</span> • <span id="profile-tag">@Freezers1</span></div>
-        </div>
-        <div class="card-title" style="margin-left: 4px; margin-bottom: 8px;">Статистика профиля</div>
-        <div class="stats-grid">
-            <div class="stat-box"><div class="card-title">Успешных</div><div class="stat-num" style="color: var(--success-green);">0</div></div>
-            <div class="stat-box"><div class="card-title">Активных</div><div class="stat-num" style="color: #58a6ff;">0</div></div>
-            <div class="stat-box"><div class="card-title">Завершённых</div><div class="stat-num">0</div></div>
-            <div class="stat-box"><div class="card-title">Отменённых</div><div class="stat-num" style="color: var(--text-sub);">0</div></div>
-        </div>
-        <div class="card">
-            <div class="card-title">Гарант сервиса</div>
-            <div style="font-weight: 700; margin: 4px 0;">Официальный гарант: <span style="color: var(--star-gold);">@freezers1</span></div>
-            <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px;">Комиссия сервиса составляет всего 1%</div>
-            <button class="btn-main" style="margin: 0;" onclick="window.location.href='https://t.me/freezers1'">Открыть @freezers1</button>
-        </div>
-    </div>
-
     <!-- Модальное окно создания сделки -->
-    <div id="create-deal-modal" class="modal">
+    <div id="create-modal" class="modal">
         <div class="modal-body">
-            <h3 style="margin-bottom: 8px;">Создание сделки</h3>
-            <label class="card-title">Название товара / услуги</label>
+            <h3>Создание сделки</h3>
+            <label class="card-title">Название товара</label>
             <input type="text" id="deal-title" class="input-field" placeholder="Например: Telegram Premium">
             
             <label class="card-title">Цена</label>
@@ -127,110 +56,53 @@
                 <option value="rub">₽ RUB</option>
             </select>
 
-            <button class="btn-main" onclick="submitCreateDeal()">Создать и получить код</button>
-            <button class="btn-sub" onclick="closeCreateDealModal()">Отмена</button>
+            <button class="btn-main" onclick="submitCreate()">Создать</button>
+            <button class="btn-sub" onclick="closeCreateModal()">Отмена</button>
         </div>
-    </div>
-
-    <!-- Модальное окно пополнения -->
-    <div id="deposit-modal" class="modal">
-        <div class="modal-body">
-            <h3 style="margin-bottom: 8px;" id="modal-title">Пополнить баланс</h3>
-            <p style="font-size: 13px; color: var(--text-sub);">Укажите сумму пополнения:</p>
-            <input type="number" id="deposit-amount" class="input-field" placeholder="Введите сумму" value="50">
-            <button class="btn-main" onclick="submitDeposit()">Оплатить</button>
-            <button class="btn-sub" onclick="closeModal()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- Нижняя навигация -->
-    <div class="bottom-nav">
-        <button class="nav-btn active" onclick="switchTab('deals', this)"><span class="nav-icon">📋</span><span>Сделки</span></button>
-        <button class="nav-btn" onclick="switchTab('wallets', this)"><span class="nav-icon">👛</span><span>Кошельки</span></button>
-        <button class="nav-btn" onclick="switchTab('profile', this)"><span class="nav-icon">👤</span><span>Профиль</span></button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        let selectedCurr = 'ton';
+        function openCreateModal() { document.getElementById('create-modal').classList.add('active'); }
+        function closeCreateModal() { document.getElementById('create-modal').classList.remove('active'); }
 
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            document.getElementById('profile-name').innerText = user.first_name;
-            document.getElementById('profile-tag').innerText = `@${user.username || 'user'}`;
-            document.getElementById('avatar-letter').innerText = user.first_name.charAt(0).toUpperCase();
-        }
-
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        function selectCurrency(code, label, name, balance, btn) {
-            document.querySelectorAll('.curr-chip').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            selectedCurr = code;
-            document.getElementById('curr-label').innerText = 'Кошелёк ' + label;
-            document.getElementById('curr-value').innerHTML = name + `<span style="margin-left: auto; color: var(--text-sub);">${balance}</span>`;
-        }
-
-        function openCreateDealModal() { document.getElementById('create-deal-modal').classList.add('active'); }
-        function closeCreateDealModal() { document.getElementById('create-deal-modal').classList.remove('active'); }
-
-        function submitCreateDeal() {
+        function submitCreate() {
             const title = document.getElementById('deal-title').value;
             const price = document.getElementById('deal-price').value;
             const currency = document.getElementById('deal-currency').value;
 
             if(!title || !price || price <= 0) {
-                tg.showAlert("Заполните все поля корректно");
+                tg.showAlert("Заполните все поля");
                 return;
             }
 
-            tg.sendData(JSON.stringify({
+            const data = JSON.stringify({
                 action: "create_deal",
                 title: title,
                 price: parseFloat(price),
                 currency: currency
-            }));
-            closeCreateDealModal();
-            tg.close();
+            });
+
+            try {
+                tg.sendData(data);
+                closeCreateModal();
+                tg.close();
+            } catch(e) {
+                tg.showAlert("Ошибка отправки. Откройте приложение через КНОПКУ МЕНЮ внизу слева.");
+            }
         }
 
         function joinDeal() {
             const code = document.getElementById('deal-code-input').value.trim();
-            if(!code || code.length < 4) {
-                tg.showAlert("Введите корректный код сделки");
-                return;
-            }
+            if(!code) return;
 
             tg.sendData(JSON.stringify({
                 action: "get_deal",
                 code: code
             }));
             tg.close();
-        }
-
-        function openDepositModal() { document.getElementById('deposit-modal').classList.add('active'); }
-        function closeModal() { document.getElementById('deposit-modal').classList.remove('active'); }
-
-        function submitDeposit() {
-            const amount = document.getElementById('deposit-amount').value;
-            if(!amount || amount <= 0) {
-                tg.showAlert("Введите корректную сумму");
-                return;
-            }
-            if (selectedCurr === 'stars') {
-                tg.sendData(JSON.stringify({ action: "pay_stars", amount: parseInt(amount) }));
-                closeModal();
-                tg.close();
-            } else {
-                tg.showAlert("Метод оплаты в разработке");
-            }
         }
     </script>
 </body>
