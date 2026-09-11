@@ -624,6 +624,20 @@
       closeModal('modal-safety');
       dealData.code = 'AB' + Math.floor(100 + Math.random() * 900) + 'D';
 
+      // Карта иконок валют
+      const currencyIcons = {
+        'TON': '💎',
+        'STARS': '⭐',
+        'USDT': '💵',
+        'RUB': '₽',
+        'BTC': '₿',
+        'EUR': '€'
+      };
+
+      // Динамическая установка иконки
+      const icon = currencyIcons[dealData.currency] || '⭐';
+      document.getElementById('dv-icon').innerText = icon;
+
       // Настройка карточки созданной сделки
       document.getElementById('dv-amount').innerText = `${dealData.amount} ${dealData.currency}`;
       document.getElementById('dv-desc').innerText = dealData.desc;
