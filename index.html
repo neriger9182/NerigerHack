@@ -7,75 +7,106 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #eaf2ff;
-            --card-bg: #ffffff;
-            --text-main: #111827;
-            --text-sub: #6b7280;
-            --blue-accent: #2b77f6;
-            --blue-light: #dbeafe;
-            --gray-bg: #f3f4f6;
-            --border-color: #f0f0f0;
+            /* Цветовая палитра FunPay */
+            --fp-bg: #11141d;
+            --fp-card: #1b1f2c;
+            --fp-card-border: #2b3042;
+            --fp-primary: #3b82f6;
+            --fp-primary-hover: #2563eb;
+            --fp-accent: #f59e0b;
+            --fp-text-main: #f3f4f6;
+            --fp-text-sub: #9ca3af;
+            --fp-input-bg: #141722;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--bg-color);
-            background-image: repeating-linear-gradient(
-                -45deg,
-                rgba(43, 119, 246, 0.03),
-                rgba(43, 119, 246, 0.03) 80px,
-                transparent 80px,
-                transparent 160px
-            );
-            color: var(--text-main);
+            background-color: var(--fp-bg);
+            /* Текстура сетки на заднем фоне в стиле торговой площадки */
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--fp-text-main);
             padding: 16px;
-            padding-bottom: 100px;
+            padding-bottom: 90px;
             min-height: 100vh;
         }
 
-        .page-title {
-            font-size: 26px;
-            font-weight: 800;
+        /* Шапка в стиле FunPay */
+        .fp-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--fp-card);
+            border: 1px solid var(--fp-card-border);
+            border-radius: 16px;
             margin-bottom: 16px;
+        }
+
+        .fp-logo {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ffffff;
             letter-spacing: -0.5px;
-            color: #0d172a;
+        }
+        .fp-logo span { color: var(--fp-primary); }
+
+        .fp-user-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--fp-input-bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--fp-card-border);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            color: #ffffff;
         }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
         .card {
-            background: var(--card-bg);
-            border-radius: 20px;
+            background: var(--fp-card);
+            border: 1px solid var(--fp-card-border);
+            border-radius: 16px;
             padding: 16px;
             margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .btn-blue {
             width: 100%;
-            background: var(--blue-accent);
+            background: var(--fp-primary);
             color: #ffffff;
             border: none;
-            padding: 16px;
-            border-radius: 18px;
-            font-size: 16px;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(43, 119, 246, 0.25);
-            transition: transform 0.1s;
+            transition: 0.15s;
         }
-        .btn-blue:active { transform: scale(0.98); }
+        .btn-blue:active { background: var(--fp-primary-hover); transform: scale(0.98); }
 
         .btn-light {
             width: 100%;
-            background: #f3f4f6;
-            color: #111827;
+            background: var(--fp-card-border);
+            color: var(--fp-text-main);
             border: none;
-            padding: 16px;
-            border-radius: 18px;
-            font-size: 16px;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             margin-top: 8px;
@@ -83,27 +114,27 @@
 
         .input-box {
             width: 100%;
-            padding: 14px 16px;
-            background: #f3f4f6;
-            border: none;
-            color: var(--text-main);
-            border-radius: 14px;
-            font-size: 16px;
+            padding: 12px 14px;
+            background: var(--fp-input-bg);
+            border: 1px solid var(--fp-card-border);
+            color: var(--fp-text-main);
+            border-radius: 10px;
+            font-size: 15px;
             outline: none;
             margin-top: 8px;
         }
+        .input-box:focus { border-color: var(--fp-primary); }
 
+        /* Нижняя навигация */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            bottom: 0; left: 0; right: 0;
+            background: rgba(27, 31, 44, 0.95);
+            backdrop-filter: blur(12px);
             display: flex;
             justify-content: space-around;
-            padding: 8px 12px 16px 12px;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            padding: 8px 10px 14px 10px;
+            border-top: 1px solid var(--fp-card-border);
             z-index: 100;
         }
 
@@ -111,110 +142,96 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             border: none;
             background: none;
-            color: #9ca3af;
+            color: var(--fp-text-sub);
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             width: 22%;
             padding: 4px 0;
-            border-radius: 14px;
             transition: all 0.2s;
         }
 
-        .nav-item.active { color: var(--blue-accent); }
-        .nav-item .icon-bg {
-            width: 48px; height: 28px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center; margin-bottom: 3px;
-        }
-        .nav-item.active .icon-bg { background-color: var(--blue-light); }
-        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+        .nav-item.active { color: var(--fp-primary); }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 2px; }
 
-        .deals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .deals-grid .card { margin-bottom: 0; padding: 16px; }
-        .deals-grid-title { font-size: 15px; font-weight: 700; color: #111827; }
-        .deals-grid-sub { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+        .deals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .deals-grid .card { margin-bottom: 0; padding: 14px; }
+        .deals-grid-title { font-size: 14px; font-weight: 700; color: #fff; }
+        .deals-grid-sub { font-size: 12px; color: var(--fp-text-sub); margin-top: 2px; }
 
         .guarantor-info {
-            background: rgba(219, 234, 254, 0.4);
-            border-radius: 16px;
-            padding: 14px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 12px;
             font-size: 13px;
-            color: #374151;
+            color: var(--fp-text-sub);
             line-height: 1.4;
-            margin-top: 16px;
+            margin-top: 14px;
         }
-        .guarantor-info a { color: #d97706; font-weight: 700; text-decoration: none; }
+        .guarantor-info a { color: var(--fp-accent); font-weight: 700; text-decoration: none; }
 
-        .currency-selector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
+        .currency-selector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
         .currency-selector::-webkit-scrollbar { display: none; }
 
         .chip {
             display: flex; align-items: center; gap: 6px; padding: 8px 14px;
-            border-radius: 20px; background: #ffffff; font-size: 13px; font-weight: 700;
-            color: #4b5563; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            border-radius: 20px; background: var(--fp-card); border: 1px solid var(--fp-card-border);
+            font-size: 13px; font-weight: 700; color: var(--fp-text-sub); cursor: pointer; white-space: nowrap;
         }
-        .chip.active { background: var(--blue-accent); color: #ffffff; }
+        .chip.active { background: var(--fp-primary); color: #ffffff; border-color: var(--fp-primary); }
 
-        .wallet-card-header { font-size: 13px; color: var(--text-sub); margin-bottom: 12px; font-weight: 600; }
+        .wallet-card-header { font-size: 12px; color: var(--fp-text-sub); margin-bottom: 8px; font-weight: 600; }
         .wallet-coin-row { display: flex; align-items: center; gap: 12px; }
-        .coin-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--blue-accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 18px; }
+        .coin-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--fp-primary); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 16px; }
 
-        .checkbox-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; border-radius: 16px; font-weight: 700; font-size: 15px; margin-bottom: 12px; }
+        .checkbox-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--fp-card); border: 1px solid var(--fp-card-border); border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 12px; }
 
-        .leaders-header { text-align: center; margin-bottom: 16px; }
-        .crown-icon { font-size: 38px; margin-bottom: 4px; display: block; }
-        .leaders-title { font-size: 24px; font-weight: 800; }
-        .leaders-sub { font-size: 13px; color: var(--blue-accent); margin-top: 4px; font-weight: 600; }
+        .profile-header { text-align: center; margin-bottom: 16px; }
+        .avatar-circle { width: 70px; height: 70px; border-radius: 50%; background: var(--fp-primary); color: #fff; font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; border: 3px solid var(--fp-card-border); }
+        .profile-name { font-size: 18px; font-weight: 800; color: #fff; }
+        .profile-tag { font-size: 13px; color: var(--fp-accent); font-weight: 700; margin-top: 2px; }
 
-        .timer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
-        .timer-box { background: #fff; padding: 10px 4px; border-radius: 14px; text-align: center; }
-        .timer-val { font-size: 20px; font-weight: 800; color: var(--blue-accent); }
-        .timer-lbl { font-size: 10px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+        .stat-item { background: var(--fp-input-bg); padding: 10px; border-radius: 10px; border: 1px solid var(--fp-card-border); }
+        .stat-lbl { font-size: 12px; color: var(--fp-text-sub); font-weight: 600; }
+        .stat-val { font-size: 18px; font-weight: 800; margin-top: 2px; color: #fff; }
 
-        .places-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
-        .place-card { background: #fff; padding: 14px 8px; border-radius: 16px; text-align: center; }
-        .medal-badge { width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 8px auto; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; }
-        .medal-1 { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .medal-2 { background: linear-gradient(135deg, #9ca3af, #4b5563); }
-        .medal-3 { background: linear-gradient(135deg, #b45309, #78350f); }
-
-        .profile-header { text-align: center; margin-bottom: 20px; }
-        .avatar-circle { width: 80px; height: 80px; border-radius: 50%; background: #ff5252; color: #fff; font-size: 36px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3); }
-        .profile-name { font-size: 20px; font-weight: 800; }
-        .profile-tag { font-size: 14px; color: #f59e0b; font-weight: 700; margin-top: 2px; }
-
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .stat-item { background: #f9fafb; padding: 12px; border-radius: 14px; }
-        .stat-lbl { font-size: 13px; color: var(--text-sub); font-weight: 600; }
-        .stat-val { font-size: 20px; font-weight: 800; margin-top: 4px; color: #111827; }
-
+        /* Модальное окно */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.4); display: none; align-items: flex-end; z-index: 200;
+            background: rgba(0, 0, 0, 0.7); display: none; align-items: flex-end; z-index: 200;
         }
         .modal-overlay.active { display: flex; }
 
         .modal-sheet {
-            background: #ffffff; width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 24px; animation: slideUp 0.25s ease-out;
+            background: var(--fp-card); width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; border-top: 1px solid var(--fp-card-border);
         }
 
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .modal-title { font-size: 20px; font-weight: 800; }
-        .modal-close { background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; color: #6b7280; }
+        .modal-title { font-size: 18px; font-weight: 800; color: #fff; }
+        .modal-close { background: var(--fp-card-border); border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; color: #fff; }
 
         .option-btn {
-            width: 100%; background: #f9fafb; border: none; padding: 16px; border-radius: 16px;
-            font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; color: #111827;
+            width: 100%; background: var(--fp-input-bg); border: 1px solid var(--fp-card-border); padding: 14px; border-radius: 12px;
+            font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; color: #fff;
         }
     </style>
 </head>
 <body>
 
+    <!-- Шапка в стиле FunPay -->
+    <div class="fp-header">
+        <div class="fp-logo">freezers<span>.io</span></div>
+        <div class="fp-user-pill">
+            <span style="color: var(--fp-accent);">●</span>
+            <span id="top-username">@Freezers1</span>
+        </div>
+    </div>
+
+    <!-- Вкладка Сделки -->
     <div id="tab-deals" class="tab-content active">
         <h1 class="page-title">Мои сделки</h1>
         <button class="btn-blue" onclick="openModal()">+ Создать сделку</button>
@@ -222,28 +239,29 @@
 
         <div class="deals-grid" style="margin-top: 12px;">
             <div class="card">
-                <div class="deals-grid-title">Активные</div>
-                <div class="deals-grid-sub">Текущие сделки</div>
+                <div class="deals-grid-title">0 Активных</div>
+                <div class="deals-grid-sub">Текущие заказы</div>
             </div>
             <div class="card">
-                <div class="deals-grid-title">История</div>
-                <div class="deals-grid-sub">Завершённые</div>
+                <div class="deals-grid-title">0 Завершено</div>
+                <div class="deals-grid-sub">Успешные сделки</div>
             </div>
         </div>
 
         <div class="card">
-            <div style="font-size: 13px; color: var(--text-sub); font-weight: 600; margin-bottom: 8px;">Присоединиться по коду</div>
-            <input type="text" id="deal-code-input" class="input-box" placeholder="ABC123" style="text-align: center; font-weight: bold; font-size: 18px; letter-spacing: 2px;">
-            <button class="btn-light" style="margin-top: 12px;" onclick="joinDeal()">Войти в сделку</button>
+            <div style="font-size: 13px; color: var(--fp-text-sub); font-weight: 600; margin-bottom: 6px;">Присоединиться к заказу</div>
+            <input type="text" id="deal-code-input" class="input-box" placeholder="Введит код (напр. ABC123)" style="text-align: center; font-weight: bold; font-size: 16px; letter-spacing: 2px;">
+            <button class="btn-light" style="margin-top: 10px;" onclick="joinDeal()">Открыть заказ</button>
         </div>
 
         <div class="guarantor-info">
-            Передавайте товар только на <a href="https://t.me/Freezers1" target="_blank">@Freezers1</a>. Нажмите на юзернейм, чтобы открыть гаранта.
+            Передавайте товары/услуги только после подтверждения гаранта <a href="https://t.me/Freezers1" target="_blank">@Freezers1</a>.
         </div>
     </div>
 
+    <!-- Вкладка Кошельки -->
     <div id="tab-wallet" class="tab-content">
-        <h1 class="page-title">Мои кошельки</h1>
+        <h1 class="page-title">Баланс и кошельки</h1>
         <div class="currency-selector">
             <div class="chip active" onclick="selectCurrency('TON', this)">💎 TON</div>
             <div class="chip" onclick="selectCurrency('USDT', this)">💵 USDT</div>
@@ -256,184 +274,85 @@
             <div class="wallet-coin-row">
                 <div class="coin-icon" id="wallet-coin-icon">💎</div>
                 <div>
-                    <div style="font-size: 18px; font-weight: 800;" id="wallet-coin-name">Toncoin</div>
-                    <div style="font-size: 14px; color: var(--text-sub); font-weight: 600;" id="wallet-coin-val">0 TON</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #fff;" id="wallet-coin-name">Toncoin</div>
+                    <div style="font-size: 14px; color: var(--fp-text-sub); font-weight: 600;" id="wallet-coin-val">0.00 TON</div>
                 </div>
             </div>
         </div>
 
-        <button class="btn-blue" onclick="actionWallet('deposit')">Пополнить</button>
-        <button class="btn-light" onclick="actionWallet('withdraw')">Вывести</button>
-
-        <div class="checkbox-row" style="margin-top: 16px;">
-            <span>Скрыть нулевые</span>
-            <input type="checkbox" checked style="width: 20px; height: 20px; accent-color: var(--blue-accent);">
-        </div>
-
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="coin-icon" style="width:36px; height:36px; font-size:14px;">💎</div>
-                <div>
-                    <div style="font-weight: 800; font-size: 15px;">TON</div>
-                    <div style="font-size: 12px; color: var(--text-sub);">Toncoin</div>
-                </div>
-            </div>
-            <div style="font-weight: 800; font-size: 16px;">0</div>
-        </div>
-
-        <h3 style="margin-top: 20px; font-size: 18px; font-weight: 800;">История</h3>
-        <div style="text-align: center; color: var(--text-sub); font-size: 14px; margin-top: 24px; font-weight: 500;">
-            Начислений пока нет
-        </div>
+        <button class="btn-blue" onclick="actionWallet('deposit')">Пополнить баланс</button>
+        <button class="btn-light" onclick="actionWallet('withdraw')">Вывести средства</button>
     </div>
 
-    <div id="tab-leaders" class="tab-content">
-        <div class="leaders-header">
-            <span class="crown-icon">👑</span>
-            <div class="leaders-title">Топ участников</div>
-            <div class="leaders-sub">Топ-20 участников по объёму сделок разделят призовой фонд</div>
-        </div>
-
-        <div class="card" style="text-align: center; font-weight: 700; font-size: 15px;">
-            Уже приняли участие более
-            <div style="color: var(--blue-accent); font-size: 18px; font-weight: 800; margin-top: 4px;">120 тысяч человек</div>
-        </div>
-
-        <div style="text-align: center; font-size: 12px; font-weight: 800; color: var(--blue-accent); letter-spacing: 1px; margin-top: 16px;">ДО СТАРТА</div>
-        
-        <div class="timer-grid">
-            <div class="timer-box"><div class="timer-val">00</div><div class="timer-lbl">Дней</div></div>
-            <div class="timer-box"><div class="timer-val">22</div><div class="timer-lbl">Часов</div></div>
-            <div class="timer-box"><div class="timer-val">26</div><div class="timer-lbl">Минут</div></div>
-            <div class="timer-box"><div class="timer-val">03</div><div class="timer-lbl">Секунд</div></div>
-        </div>
-
-        <div class="card" style="text-align: center;">
-            <div style="font-size: 12px; color: var(--text-sub); font-weight: 800; letter-spacing: 1px;">ПРИЗОВОЙ ФОНД</div>
-            <div style="font-size: 32px; font-weight: 900; color: var(--blue-accent); margin-top: 2px;">$50 000</div>
-        </div>
-
-        <div class="places-grid">
-            <div class="place-card">
-                <div class="medal-badge medal-1">1</div>
-                <div style="font-weight: 800; font-size: 15px;">$10K</div>
-                <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">1 место</div>
-            </div>
-            <div class="place-card">
-                <div class="medal-badge medal-2">2</div>
-                <div style="font-weight: 800; font-size: 15px;">$5K</div>
-                <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">2 место</div>
-            </div>
-            <div class="place-card">
-                <div class="medal-badge medal-3">3</div>
-                <div style="font-weight: 800; font-size: 15px;">$3K</div>
-                <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">3 место</div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Вкладка Профиль -->
     <div id="tab-profile" class="tab-content">
         <div class="profile-header">
             <div class="avatar-circle" id="user-avatar">F</div>
-            <div class="profile-name" id="user-name">Freezers</div>
+            <div class="profile-name" id="user-name">Freezers User</div>
             <div class="profile-tag" id="user-username">@Freezers1</div>
         </div>
 
         <div class="card">
-            <div style="font-size: 13px; color: var(--text-sub); font-weight: 700; margin-bottom: 8px;">Статистика сделок</div>
-            
+            <div style="font-size: 13px; color: var(--fp-text-sub); font-weight: 700; margin-bottom: 6px;">Статистика профиля</div>
             <div class="stat-grid">
                 <div class="stat-item">
-                    <div class="stat-lbl">Успешных</div>
+                    <div class="stat-lbl">Сделок:</div>
                     <div class="stat-val">0</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-lbl">Активных</div>
-                    <div class="stat-val">1</div>
+                    <div class="stat-lbl">Отзывов:</div>
+                    <div class="stat-val">5 ★</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-lbl">Завершённых</div>
-                    <div class="stat-val">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-lbl">Отменённых</div>
-                    <div class="stat-val">0</div>
-                </div>
-            </div>
-
-            <div class="stat-item" style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
-                <div class="stat-lbl" style="font-size: 15px;">Всего</div>
-                <div class="stat-val" style="margin-top: 0;">1</div>
-            </div>
-
-            <div style="font-size: 13px; color: var(--text-sub); display: flex; justify-content: space-between; margin-top: 14px; font-weight: 600;">
-                <span>Торговый оборот</span>
-                <span style="font-weight: 800; color: #111827;">0 $</span>
             </div>
         </div>
 
         <div class="card">
-            <div style="font-size: 13px; color: var(--text-sub); font-weight: 700; margin-bottom: 4px;">Гарант</div>
-            <div style="font-weight: 800; font-size: 15px; margin-bottom: 2px;">Аккаунт гаранта: <span style="color: #d97706;">@Freezers1</span></div>
-            <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 14px;">Комиссия гаранта: 1%</div>
-            
-            <button class="btn-blue" onclick="window.open('https://t.me/Freezers1', '_blank')">Открыть @Freezers1</button>
+            <div style="font-size: 13px; color: var(--fp-text-sub); font-weight: 700; margin-bottom: 4px;">Официальный гарант</div>
+            <div style="font-weight: 800; font-size: 15px; margin-bottom: 2px; color: #fff;">Аккаунт: <span style="color: var(--fp-accent);">@Freezers1</span></div>
+            <button class="btn-blue" style="margin-top: 10px;" onclick="window.open('https://t.me/Freezers1', '_blank')">Написать гаранту</button>
         </div>
     </div>
 
+    <!-- Модальное окно создания сделки -->
     <div id="modal-create" class="modal-overlay">
         <div class="modal-sheet">
             <div class="modal-header">
-                <div>
-                    <div class="modal-title">Создать сделку</div>
-                    <div style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Выберите тип сделки</div>
-                </div>
+                <div class="modal-title">Новая сделка</div>
                 <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
 
             <button class="option-btn" onclick="selectType('buy')">
-                <span style="color: var(--blue-accent);">↓</span> Купить
+                <span style="color: var(--fp-primary);">↓</span> Купить товар/услугу
             </button>
             <button class="option-btn" onclick="selectType('sell')">
-                <span style="color: var(--blue-accent);">↑</span> Продать
+                <span style="color: var(--fp-accent);">↑</span> Продать товар/услугу
             </button>
 
             <div id="create-form" style="display: none; margin-top: 10px;">
                 <input type="number" id="deal-amount" class="input-box" placeholder="Сумма сделки">
-                <select id="deal-currency" class="input-box" style="margin-top: 8px;">
+                <select id="deal-currency" class="input-box">
                     <option value="TON">💎 TON</option>
                     <option value="USDT">💵 USDT</option>
                     <option value="STARS">⭐ STARS</option>
                     <option value="RUB">₽ RUB</option>
                 </select>
-                <button class="btn-blue" style="margin-top: 14px;" onclick="finishCreateDeal()">Сформировать ссылку</button>
+                <button class="btn-blue" style="margin-top: 14px;" onclick="finishCreateDeal()">Сформировать заказ</button>
             </div>
         </div>
     </div>
 
+    <!-- Навигация -->
     <div class="bottom-nav">
         <button class="nav-item active" id="nav-deals" onclick="switchTab('deals')">
-            <div class="icon-bg">
-                <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
-            </div>
-            Сделки
+            <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+            Заказы
         </button>
         <button class="nav-item" id="nav-wallet" onclick="switchTab('wallet')">
-            <div class="icon-bg">
-                <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-            </div>
-            Кошельки
-        </button>
-        <button class="nav-item" id="nav-leaders" onclick="switchTab('leaders')">
-            <div class="icon-bg">
-                <svg viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
-            </div>
-            Лидеры
+            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            Баланс
         </button>
         <button class="nav-item" id="nav-profile" onclick="switchTab('profile')">
-            <div class="icon-bg">
-                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            </div>
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             Профиль
         </button>
     </div>
@@ -449,9 +368,12 @@
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
             const name = (u.first_name || '') + ' ' + (u.last_name || '');
+            const username = u.username ? `@${u.username}` : '@Freezers1';
+            
             document.getElementById('user-name').innerText = name.trim() || 'Пользователь';
             document.getElementById('user-avatar').innerText = (u.first_name || 'F')[0].toUpperCase();
-            document.getElementById('user-username').innerText = u.username ? `@${u.username}` : '@Freezers1';
+            document.getElementById('user-username').innerText = username;
+            document.getElementById('top-username').innerText = username;
         }
 
         function switchTab(tabName) {
@@ -472,13 +394,13 @@
             const val = document.getElementById('wallet-coin-val');
 
             if (curr === 'TON') {
-                title.innerText = "Кошелёк TON"; icon.innerText = "💎"; name.innerText = "Toncoin"; val.innerText = "0 TON";
+                title.innerText = "Кошелёк TON"; icon.innerText = "💎"; name.innerText = "Toncoin"; val.innerText = "0.00 TON";
             } else if (curr === 'USDT') {
-                title.innerText = "Кошелёк USDT"; icon.innerText = "💵"; name.innerText = "Tether"; val.innerText = "0 USDT";
+                title.innerText = "Кошелёк USDT"; icon.innerText = "💵"; name.innerText = "Tether"; val.innerText = "0.00 USDT";
             } else if (curr === 'STARS') {
                 title.innerText = "Кошелёк STARS"; icon.innerText = "⭐"; name.innerText = "Telegram Stars"; val.innerText = "0 STARS";
             } else if (curr === 'RUB') {
-                title.innerText = "Кошелёк RUB"; icon.innerText = "₽"; name.innerText = "Рубли"; val.innerText = "0 ₽";
+                title.innerText = "Кошелёк RUB"; icon.innerText = "₽"; name.innerText = "Рубли"; val.innerText = "0.00 ₽";
             }
         }
 
@@ -510,12 +432,12 @@
 
             const renderArea = document.getElementById('deals-render-area');
             renderArea.innerHTML = `
-                <div class="card" style="border: 2px solid var(--blue-accent);">
-                    <div style="font-size: 22px; font-weight: 800; color: var(--blue-accent);">${amount} ${curr}</div>
-                    <div style="font-size: 13px; color: var(--text-sub); margin-top: 4px;">Код сделки: <b>${code}</b></div>
-                    <button class="btn-blue" style="margin-top: 10px; padding: 12px; font-size: 14px;" 
-                            onclick="navigator.clipboard.writeText('https://t.me/${BOT_USERNAME}?start=code_${code}'); tg.showAlert('Ссылка сделки скопирована!');">
-                        Скопировать ссылку для второй стороны
+                <div class="card" style="border: 1px solid var(--fp-primary);">
+                    <div style="font-size: 20px; font-weight: 800; color: var(--fp-primary);">${amount} ${curr}</div>
+                    <div style="font-size: 13px; color: var(--fp-text-sub); margin-top: 4px;">Код заказа: <b>${code}</b></div>
+                    <button class="btn-blue" style="margin-top: 10px; padding: 10px; font-size: 13px;" 
+                            onclick="navigator.clipboard.writeText('https://t.me/${BOT_USERNAME}?start=code_${code}'); tg.showAlert('Ссылка на заказ скопирована!');">
+                        Скопировать ссылку для покупателя
                     </button>
                 </div>
             `;
@@ -524,7 +446,7 @@
         function joinDeal() {
             const code = document.getElementById('deal-code-input').value.trim().toUpperCase();
             if (!code) {
-                tg.showAlert("Введите код сделки");
+                tg.showAlert("Введите код заказа");
                 return;
             }
             tg.openTelegramLink(`https://t.me/${BOT_USERNAME}?start=code_${code}`);
@@ -532,7 +454,7 @@
         }
 
         function actionWallet(type) {
-            tg.showAlert(`Для ${type === 'deposit' ? 'пополнения' : 'вывода'} свяжитесь с гарантом @Freezers1`);
+            tg.showAlert(`Для операций с балансом обратитесь к гаранту @Freezers1`);
         }
     </script>
 </body>
