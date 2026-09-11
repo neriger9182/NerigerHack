@@ -414,30 +414,43 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        // Инициализация WebApp с проверкой наличия
+        const TelegramApp = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+
+        if (TelegramApp) {
+            TelegramApp.ready();
+            TelegramApp.expand();
+        }
 
         const BOT_USERNAME = "freezersdemo2_bot";
         let selectedType = "buy";
 
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const u = tg.initDataUnsafe.user;
+        // Безопасное получение данных о пользователе
+        if (TelegramApp && TelegramApp.initDataUnsafe && TelegramApp.initDataUnsafe.user) {
+            const u = TelegramApp.initDataUnsafe.user;
             const name = (u.first_name || '') + ' ' + (u.last_name || '');
             const username = u.username ? `@${u.username}` : '@Freezers1';
             
-            document.getElementById('user-name').innerText = name.trim() || 'Пользователь';
-            document.getElementById('user-avatar').innerText = (u.first_name || 'F')[0].toUpperCase();
-            document.getElementById('user-username').innerText = username;
-            document.getElementById('top-username').innerText = username;
+            const nameElem = document.getElementById('user-name');
+            const avatarElem = document.getElementById('user-avatar');
+            const userTagElem = document.getElementById('user-username');
+            const topTagElem = document.getElementById('top-username');
+
+            if (nameElem) nameElem.innerText = name.trim() || 'Пользователь';
+            if (avatarElem) avatarElem.innerText = (u.first_name || 'F')[0].toUpperCase();
+            if (userTagElem) userTagElem.innerText = username;
+            if (topTagElem) topTagElem.innerText = username;
         }
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            document.getElementById(`nav-${tabName}`).classList.add('active');
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            const targetNav = document.getElementById(`nav-${tabName}`);
+
+            if (targetTab) targetTab.classList.add('active');
+            if (targetNav) targetNav.classList.add('active');
         }
 
         function selectCurrency(curr, el) {
@@ -450,79 +463,113 @@
             const val = document.getElementById('wallet-coin-val');
 
             if (curr === 'TON') {
-                title.innerText = "Кошелёк TON"; icon.innerText = "💎"; name.innerText = "Toncoin"; val.innerText = "0.00 TON";
+                if(title) title.innerText = "Кошелёк TON"; 
+                if(icon) icon.innerText = "💎"; 
+                if(name) name.innerText = "Toncoin"; 
+                if(val) val.innerText = "0.00 TON";
             } else if (curr === 'USDT') {
-                title.innerText = "Кошелёк USDT"; icon.innerText = "💵"; name.innerText = "Tether"; val.innerText = "0.00 USDT";
+                if(title) title.innerText = "Кошелёк USDT"; 
+                if(icon) icon.innerText = "💵"; 
+                if(name) name.innerText = "Tether"; 
+                if(val) val.innerText = "0.00 USDT";
             } else if (curr === 'STARS') {
-                title.innerText = "Кошелёк STARS"; icon.innerText = "⭐"; name.innerText = "Telegram Stars"; val.innerText = "0 STARS";
+                if(title) title.innerText = "Кошелёк STARS"; 
+                if(icon) icon.innerText = "⭐"; 
+                if(name) name.innerText = "Telegram Stars"; 
+                if(val) val.innerText = "0 STARS";
             } else if (curr === 'RUB') {
-                title.innerText = "Кошелёк RUB"; icon.innerText = "₽"; name.innerText = "Рубли"; val.innerText = "0.00 ₽";
+                if(title) title.innerText = "Кошелёк RUB"; 
+                if(icon) icon.innerText = "₽"; 
+                if(name) name.innerText = "Рубли"; 
+                if(val) val.innerText = "0.00 ₽";
             }
         }
 
         function openModal() {
-            document.getElementById('modal-create').classList.add('active');
-            document.getElementById('create-form').style.display = 'none';
+            const modal = document.getElementById('modal-create');
+            const form = document.getElementById('create-form');
+            if (modal) modal.classList.add('active');
+            if (form) form.style.display = 'none';
         }
 
         function closeModal() {
-            document.getElementById('modal-create').classList.remove('active');
+            const modal = document.getElementById('modal-create');
+            if (modal) modal.classList.remove('active');
         }
 
         function selectType(type) {
-            selectedType = type;
-            document.getElementById('create-form').style.display = 'block';
+            selectedType = type || 'buy';
+            const form = document.getElementById('create-form');
+            if (form) form.style.display = 'block';
         }
 
         function finishCreateDeal() {
-            const amountInput = document.getElementById('deal-amount');
-            const currInput = document.getElementById('deal-currency');
-
-            const amount = amountInput ? amountInput.value.trim() : '';
-            const curr = currInput ? currInput.value : 'TON';
-
-            if (!amount || parseFloat(amount) <= 0) {
-                if (tg.showAlert) {
-                    tg.showAlert("Введите корректную сумму");
-                } else {
-                    alert("Введите корректную сумму");
-                }
-                return;
-            }
-
-            // Генерация кода сделки
-            const dealId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            
-            const data = {
-                action: "create_deal",
-                deal_id: String(dealId),
-                amount: String(amount),
-                currency: String(curr),
-                type: selectedType
-            };
-
             try {
-                // Передача данных боту
-                tg.sendData(JSON.stringify(data));
-                // Закрытие приложения WebApp
-                tg.close();
+                const amountInput = document.getElementById('deal-amount');
+                const currInput = document.getElementById('deal-currency');
+
+                const amount = amountInput ? String(amountInput.value).trim() : '0';
+                const curr = currInput ? String(currInput.value) : 'TON';
+
+                if (!amount || parseFloat(amount) <= 0) {
+                    if (TelegramApp && TelegramApp.showAlert) {
+                        TelegramApp.showAlert("Введите корректную сумму сделки");
+                    } else {
+                        alert("Введите корректную сумму сделки");
+                    }
+                    return;
+                }
+
+                // Генерация случайного кода сделки
+                const dealId = Math.random().toString(36).substring(2, 8).toUpperCase();
+                
+                // Формирование структуры данных из строковых полей
+                const payload = {
+                    action: "create_deal",
+                    deal_id: String(dealId),
+                    amount: String(amount),
+                    currency: String(curr),
+                    type: String(selectedType || 'buy')
+                };
+
+                const jsonString = JSON.stringify(payload);
+
+                if (TelegramApp && TelegramApp.sendData) {
+                    TelegramApp.sendData(jsonString);
+                    TelegramApp.close();
+                } else {
+                    alert("Ошибка: Запущен вне приложения Telegram WebApp");
+                }
             } catch (err) {
-                alert("Ошибка при передаче данных в Telegram: " + err.message);
+                alert("Ошибка скрипта: " + err.message);
             }
         }
 
         function joinDeal() {
-            const code = document.getElementById('deal-code-input').value.trim().toUpperCase();
+            const input = document.getElementById('deal-code-input');
+            const code = input ? input.value.trim().toUpperCase() : '';
             if (!code) {
-                tg.showAlert("Введите код заказа");
+                if (TelegramApp && TelegramApp.showAlert) {
+                    TelegramApp.showAlert("Введите код заказа");
+                } else {
+                    alert("Введите код заказа");
+                }
                 return;
             }
-            tg.openTelegramLink(`https://t.me/${BOT_USERNAME}?start=code_${code}`);
-            tg.close();
+            if (TelegramApp && TelegramApp.openTelegramLink) {
+                TelegramApp.openTelegramLink(`https://t.me/${BOT_USERNAME}?start=code_${code}`);
+                TelegramApp.close();
+            } else {
+                window.location.href = `https://t.me/${BOT_USERNAME}?start=code_${code}`;
+            }
         }
 
         function actionWallet(type) {
-            tg.showAlert(`Для операций с балансом обратитесь к гаранту @Freezers1`);
+            if (TelegramApp && TelegramApp.showAlert) {
+                TelegramApp.showAlert("Для операций с балансом обратитесь к гаранту @Freezers1");
+            } else {
+                alert("Для операций с балансом обратитесь к гаранту @Freezers1");
+            }
         }
     </script>
 </body>
