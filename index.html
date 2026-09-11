@@ -336,19 +336,19 @@
         <h1 class="page-title">Мои кошельки</h1>
 
         <div class="currency-selector">
-            <div class="chip active" onclick="selectCurrency('TON')">💎 TON</div>
-            <div class="chip" onclick="selectCurrency('USDT')">💵 USDT</div>
-            <div class="chip" onclick="selectCurrency('STARS')">⭐ STARS</div>
-            <div class="chip" onclick="selectCurrency('RUB')">₽ RUB</div>
+            <div class="chip active" onclick="selectCurrency('TON', this)">💎 TON</div>
+            <div class="chip" onclick="selectCurrency('USDT', this)">💵 USDT</div>
+            <div class="chip" onclick="selectCurrency('STARS', this)">⭐ STARS</div>
+            <div class="chip" onclick="selectCurrency('RUB', this)">₽ RUB</div>
         </div>
 
         <div class="card">
-            <div class="wallet-card-header">Кошелёк TON</div>
+            <div class="wallet-card-header" id="wallet-card-title">Кошелёк TON</div>
             <div class="wallet-coin-row">
-                <div class="coin-icon">💎</div>
+                <div class="coin-icon" id="wallet-coin-icon">💎</div>
                 <div>
-                    <div style="font-size: 18px; font-weight: 800;">Toncoin</div>
-                    <div style="font-size: 14px; color: var(--text-sub); font-weight: 600;">0 TON</div>
+                    <div style="font-size: 18px; font-weight: 800;" id="wallet-coin-name">Toncoin</div>
+                    <div style="font-size: 14px; color: var(--text-sub); font-weight: 600;" id="wallet-coin-val">0 TON</div>
                 </div>
             </div>
         </div>
@@ -497,6 +497,7 @@
                 <select id="deal-currency" class="input-box" style="margin-top: 8px;">
                     <option value="TON">💎 TON</option>
                     <option value="USDT">💵 USDT</option>
+                    <option value="STARS">⭐ STARS</option>
                     <option value="RUB">₽ RUB</option>
                 </select>
                 <button class="btn-blue" style="margin-top: 14px;" onclick="finishCreateDeal()">Сформировать ссылку</button>
@@ -558,9 +559,24 @@
         }
 
         // Выбор валюты в кошельке
-        function selectCurrency(curr) {
-            document.querySelectorAll('.currency-selector .chip').forEach(el => el.classList.remove('active'));
-            event.target.classList.add('active');
+        function selectCurrency(curr, el) {
+            document.querySelectorAll('.currency-selector .chip').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+
+            const title = document.getElementById('wallet-card-title');
+            const icon = document.getElementById('wallet-coin-icon');
+            const name = document.getElementById('wallet-coin-name');
+            const val = document.getElementById('wallet-coin-val');
+
+            if (curr === 'TON') {
+                title.innerText = "Кошелёк TON"; icon.innerText = "💎"; name.innerText = "Toncoin"; val.innerText = "0 TON";
+            } else if (curr === 'USDT') {
+                title.innerText = "Кошелёк USDT"; icon.innerText = "💵"; name.innerText = "Tether"; val.innerText = "0 USDT";
+            } else if (curr === 'STARS') {
+                title.innerText = "Кошелёк STARS"; icon.innerText = "⭐"; name.innerText = "Telegram Stars"; val.innerText = "0 STARS";
+            } else if (curr === 'RUB') {
+                title.innerText = "Кошелёк RUB"; icon.innerText = "₽"; name.innerText = "Рубли"; val.innerText = "0 ₽";
+            }
         }
 
         // Модальное окно
@@ -569,7 +585,7 @@
             document.getElementById('create-form').style.display = 'none';
         }
         function closeModal() {
-            document.getElementById('modal-overlay').classList.remove('active');
+            document.getElementById('modal-create').classList.remove('active');
         }
 
         function selectType(type) {
