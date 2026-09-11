@@ -8,8 +8,8 @@
     <style>
         :root { --bg-color: #0d1117; --card-bg: #161b22; --text-main: #f0f6fc; --text-sub: #8b949e; --accent-btn: #2f81f7; --border-color: #30363d; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; padding-bottom: 95px; }
-        .header-title { font-size: 26px; font-weight: 800; margin-bottom: 16px; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; }
+        .header-title { font-size: 24px; font-weight: 800; margin-bottom: 16px; }
         .card { background: var(--card-bg); border-radius: 18px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border-color); }
         .card-title { font-size: 13px; color: var(--text-sub); margin-bottom: 6px; }
         .btn-main { width: 100%; background: var(--accent-btn); color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
@@ -22,10 +22,10 @@
 </head>
 <body>
 
-    <h1 class="header-title">Мои сделки</h1>
+    <h1 class="header-title">Сделки freezers</h1>
     <button class="btn-main" onclick="openCreateModal()">+ Создать сделку</button>
 
-    <div class="card">
+    <div class="card" style="margin-top: 15px;">
         <div class="card-title">Присоединиться по коду</div>
         <input type="text" id="deal-code-input" placeholder="Введите 6-значный код" class="input-field" style="text-align: center; text-transform: uppercase;">
         <button class="btn-sub" onclick="joinDeal()">Войти в сделку</button>
@@ -49,7 +49,7 @@
                 <option value="rub">₽ RUB</option>
             </select>
 
-            <button class="btn-main" onclick="submitCreate()">Получить код сделки</button>
+            <button class="btn-main" onclick="submitCreate()">Создать сделку</button>
             <button class="btn-sub" onclick="closeCreateModal()">Отмена</button>
         </div>
     </div>
@@ -71,23 +71,11 @@
                 return;
             }
 
-            // Пытаемся отправить напрямую
-            if (tg.sendData) {
-                try {
-                    tg.sendData(JSON.stringify({
-                        action: "create_deal",
-                        title: title,
-                        price: parseFloat(price),
-                        currency: currency
-                    }));
-                    tg.close();
-                    return;
-                } catch(e) {}
-            }
+            // Прямой переход через deep-link бота (не зависит от ограничений Telegram)
+            const cleanTitle = encodeURIComponent(title.replace(/_/g, " "));
+            const link = `https://t.me/freezersdemi2_bot?start=create_${cleanTitle}_${price}_${currency}`;
             
-            // Если sendData заблокирован, открываем диалог с командой
-            const cmd = `create_${encodeURIComponent(title)}_${price}_${currency}`;
-            tg.openTelegramLink(`https://t.me/freezersdemi2_bot?start=${cmd}`);
+            tg.openTelegramLink(link);
             tg.close();
         }
 
@@ -95,15 +83,8 @@
             const code = document.getElementById('deal-code-input').value.trim().toUpperCase();
             if(!code) return;
 
-            if (tg.sendData) {
-                try {
-                    tg.sendData(JSON.stringify({ action: "get_deal", code: code }));
-                    tg.close();
-                    return;
-                } catch(e) {}
-            }
-
-            tg.openTelegramLink(`https://t.me/freezersdemi2_bot?start=code_${code}`);
+            const link = `https://t.me/freezersdemi2_bot?start=code_${code}`;
+            tg.openTelegramLink(link);
             tg.close();
         }
     </script>
