@@ -34,7 +34,6 @@
             min-height: 100vh;
         }
 
-        /* Заголовки */
         .page-title {
             font-size: 26px;
             font-weight: 800;
@@ -43,11 +42,9 @@
             color: #0d172a;
         }
 
-        /* Вкладки */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Карточки */
         .card {
             background: var(--card-bg);
             border-radius: 20px;
@@ -56,7 +53,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
-        /* Кнопки */
         .btn-blue {
             width: 100%;
             background: var(--blue-accent);
@@ -85,7 +81,6 @@
             margin-top: 8px;
         }
 
-        /* Поля ввода */
         .input-box {
             width: 100%;
             padding: 14px 16px;
@@ -98,7 +93,6 @@
             margin-top: 8px;
         }
 
-        /* Нижнее навигационное меню */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -130,41 +124,16 @@
             transition: all 0.2s;
         }
 
-        .nav-item.active {
-            color: var(--blue-accent);
-        }
-
+        .nav-item.active { color: var(--blue-accent); }
         .nav-item .icon-bg {
-            width: 48px;
-            height: 28px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 3px;
+            width: 48px; height: 28px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 3px;
         }
+        .nav-item.active .icon-bg { background-color: var(--blue-light); }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
 
-        .nav-item.active .icon-bg {
-            background-color: var(--blue-light);
-        }
-
-        .nav-item svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
-        }
-
-        /* ----- Вкладка: СДЕЛКИ ----- */
-        .deals-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .deals-grid .card {
-            margin-bottom: 0;
-            padding: 16px;
-        }
+        .deals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .deals-grid .card { margin-bottom: 0; padding: 16px; }
         .deals-grid-title { font-size: 15px; font-weight: 700; color: #111827; }
         .deals-grid-sub { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
 
@@ -179,53 +148,22 @@
         }
         .guarantor-info a { color: #d97706; font-weight: 700; text-decoration: none; }
 
-        /* ----- Вкладка: КОШЕЛЬКИ ----- */
-        .currency-selector {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-            scrollbar-width: none;
-        }
+        .currency-selector { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
         .currency-selector::-webkit-scrollbar { display: none; }
 
         .chip {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            border-radius: 20px;
-            background: #ffffff;
-            font-size: 13px;
-            font-weight: 700;
-            color: #4b5563;
-            cursor: pointer;
-            white-space: nowrap;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+            border-radius: 20px; background: #ffffff; font-size: 13px; font-weight: 700;
+            color: #4b5563; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
-        .chip.active {
-            background: var(--blue-accent);
-            color: #ffffff;
-        }
+        .chip.active { background: var(--blue-accent); color: #ffffff; }
 
         .wallet-card-header { font-size: 13px; color: var(--text-sub); margin-bottom: 12px; font-weight: 600; }
         .wallet-coin-row { display: flex; align-items: center; gap: 12px; }
         .coin-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--blue-accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 18px; }
 
-        .checkbox-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: #fff;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 15px;
-            margin-bottom: 12px;
-        }
+        .checkbox-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; border-radius: 16px; font-weight: 700; font-size: 15px; margin-bottom: 12px; }
 
-        /* ----- Вкладка: ЛИДЕРЫ ----- */
         .leaders-header { text-align: center; margin-bottom: 16px; }
         .crown-icon { font-size: 38px; margin-bottom: 4px; display: block; }
         .leaders-title { font-size: 24px; font-weight: 800; }
@@ -243,7 +181,6 @@
         .medal-2 { background: linear-gradient(135deg, #9ca3af, #4b5563); }
         .medal-3 { background: linear-gradient(135deg, #b45309, #78350f); }
 
-        /* ----- Вкладка: ПРОФИЛЬ ----- */
         .profile-header { text-align: center; margin-bottom: 20px; }
         .avatar-circle { width: 80px; height: 80px; border-radius: 50%; background: #ff5252; color: #fff; font-size: 36px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3); }
         .profile-name { font-size: 20px; font-weight: 800; }
@@ -254,59 +191,33 @@
         .stat-lbl { font-size: 13px; color: var(--text-sub); font-weight: 600; }
         .stat-val { font-size: 20px; font-weight: 800; margin-top: 4px; color: #111827; }
 
-        /* МОДАЛЬНОЕ ОКНО */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: none;
-            align-items: flex-end;
-            z-index: 200;
+            background: rgba(0, 0, 0, 0.4); display: none; align-items: flex-end; z-index: 200;
         }
         .modal-overlay.active { display: flex; }
 
         .modal-sheet {
-            background: #ffffff;
-            width: 100%;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            padding: 24px;
-            animation: slideUp 0.25s ease-out;
+            background: #ffffff; width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 24px; animation: slideUp 0.25s ease-out;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .modal-title { font-size: 20px; font-weight: 800; }
         .modal-close { background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; color: #6b7280; }
 
         .option-btn {
-            width: 100%;
-            background: #f9fafb;
-            border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            color: #111827;
+            width: 100%; background: #f9fafb; border: none; padding: 16px; border-radius: 16px;
+            font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; color: #111827;
         }
     </style>
 </head>
 <body>
 
-    <!-- ВКЛАДКА 1: СДЕЛКИ -->
     <div id="tab-deals" class="tab-content active">
         <h1 class="page-title">Мои сделки</h1>
-        
         <button class="btn-blue" onclick="openModal()">+ Создать сделку</button>
-
         <div id="deals-render-area" style="margin-top: 12px;"></div>
 
         <div class="deals-grid" style="margin-top: 12px;">
@@ -331,10 +242,8 @@
         </div>
     </div>
 
-    <!-- ВКЛАДКА 2: КОШЕЛЬКИ -->
     <div id="tab-wallet" class="tab-content">
         <h1 class="page-title">Мои кошельки</h1>
-
         <div class="currency-selector">
             <div class="chip active" onclick="selectCurrency('TON', this)">💎 TON</div>
             <div class="chip" onclick="selectCurrency('USDT', this)">💵 USDT</div>
@@ -378,7 +287,6 @@
         </div>
     </div>
 
-    <!-- ВКЛАДКА 3: ЛИДЕРЫ -->
     <div id="tab-leaders" class="tab-content">
         <div class="leaders-header">
             <span class="crown-icon">👑</span>
@@ -424,7 +332,6 @@
         </div>
     </div>
 
-    <!-- ВКЛАДКА 4: ПРОФИЛЬ -->
     <div id="tab-profile" class="tab-content">
         <div class="profile-header">
             <div class="avatar-circle" id="user-avatar">F</div>
@@ -474,7 +381,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ СДЕЛКИ -->
     <div id="modal-create" class="modal-overlay">
         <div class="modal-sheet">
             <div class="modal-header">
@@ -505,7 +411,6 @@
         </div>
     </div>
 
-    <!-- НИЖНЕЕ МЕНЮ -->
     <div class="bottom-nav">
         <button class="nav-item active" id="nav-deals" onclick="switchTab('deals')">
             <div class="icon-bg">
@@ -539,8 +444,8 @@
         tg.expand();
 
         const BOT_USERNAME = "freezersdemo2_bot";
+        let selectedType = "buy";
 
-        // Профиль Telegram
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
             const name = (u.first_name || '') + ' ' + (u.last_name || '');
@@ -549,7 +454,6 @@
             document.getElementById('user-username').innerText = u.username ? `@${u.username}` : '@Freezers1';
         }
 
-        // Переключение вкладок
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -558,7 +462,6 @@
             document.getElementById(`nav-${tabName}`).classList.add('active');
         }
 
-        // Выбор валюты в кошельке
         function selectCurrency(curr, el) {
             document.querySelectorAll('.currency-selector .chip').forEach(c => c.classList.remove('active'));
             if (el) el.classList.add('active');
@@ -579,16 +482,17 @@
             }
         }
 
-        // Модальное окно
         function openModal() {
             document.getElementById('modal-create').classList.add('active');
             document.getElementById('create-form').style.display = 'none';
         }
+
         function closeModal() {
             document.getElementById('modal-create').classList.remove('active');
         }
 
         function selectType(type) {
+            selectedType = type;
             document.getElementById('create-form').style.display = 'block';
         }
 
