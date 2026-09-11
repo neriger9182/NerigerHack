@@ -7,7 +7,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            /* Светлая палитра FunPay */
             --fp-bg: #f4f6f9;
             --fp-card: #ffffff;
             --fp-card-border: #e2e8f0;
@@ -23,7 +22,6 @@
 
         body {
             background-color: var(--fp-bg);
-            /* ПОЛУПРОЗРАЧНЫЙ СЕРЫЙ ФОН ИЗ НАДПИСЕЙ FUNPAY ДЛЯ БЕЛОЙ ТЕМЫ */
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60"><text x="15" y="25" fill="rgba(0,0,0,0.05)" font-size="12" font-weight="bold" font-family="sans-serif">funpay</text><text x="75" y="55" fill="rgba(0,0,0,0.05)" font-size="12" font-weight="bold" font-family="sans-serif">funpay</text></svg>');
             background-repeat: repeat;
             color: var(--fp-text-main);
@@ -32,7 +30,6 @@
             min-height: 100vh;
         }
 
-        /* Шапка в стиле FunPay */
         .fp-header {
             display: flex;
             align-items: center;
@@ -124,7 +121,6 @@
         }
         .input-box:focus { border-color: var(--fp-primary); }
 
-        /* Нижняя навигация */
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -196,7 +192,6 @@
         .stat-lbl { font-size: 12px; color: var(--fp-text-sub); font-weight: 600; }
         .stat-val { font-size: 18px; font-weight: 800; margin-top: 2px; color: var(--fp-text-main); }
 
-        /* Таблица лидеров */
         .leader-item {
             display: flex;
             align-items: center;
@@ -423,7 +418,7 @@
         tg.ready();
         tg.expand();
 
-        const BOT_USERNAME = "freezersdemi2_bot";
+        const BOT_USERNAME = "freezersdemo2_bot";
         let selectedType = "buy";
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -445,7 +440,6 @@
                 currency: currency
             };
             
-            // Передаем данные сделки обратно в Telegram бот
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.sendData(JSON.stringify(data));
             }
@@ -504,7 +498,6 @@
 
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             
-            // Отправляем данные сделки боту для сохранения в БД
             sendDealToBot(code, amount, curr);
 
             document.getElementById('modal-create').classList.remove('active');
