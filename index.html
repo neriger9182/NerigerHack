@@ -348,7 +348,15 @@
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 16px;
-      text-align: center;
+      text-align: left;
+    }
+    .profile-bal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 4px 0;
     }
   </style>
 </head>
@@ -446,10 +454,14 @@
         <p id="prof-tag" style="font-size: 13px; color: var(--primary-blue);">@username</p>
       </div>
 
-      <!-- Баланс в профиле -->
+      <!-- Балансы по всем валютам -->
       <div class="profile-balance-card">
-        <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">Общий баланс</div>
-        <div id="prof-balance-amount" style="font-size: 28px; font-weight: 900;">0.00 ₽</div>
+        <div style="font-size: 12px; opacity: 0.8; margin-bottom: 8px;">Балансы аккаунта</div>
+        <div class="profile-bal-row"><span>₽ Рубли:</span><span id="prof-bal-rub">0.00 ₽</span></div>
+        <div class="profile-bal-row"><span>⭐ Stars:</span><span id="prof-bal-stars">0 ⭐</span></div>
+        <div class="profile-bal-row"><span>💵 USDT:</span><span id="prof-bal-usdt">0.00 USDT</span></div>
+        <div class="profile-bal-row"><span>💎 TON:</span><span id="prof-bal-ton">0.00 TON</span></div>
+        <div class="profile-bal-row"><span>₿ BTC:</span><span id="prof-bal-btc">0.0000 BTC</span></div>
       </div>
 
       <div class="profile-grid">
@@ -590,7 +602,7 @@
 
       <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Сумма вывода</label>
       <div class="amount-input-wrap">
-        <input type="number" id="withdraw-amount" placeholder="0.00">
+        <input type="number" id="withdraw-amount" placeholder="0.00" step="any">
         <span id="withdraw-curr-badge" style="font-weight: 800;">RUB</span>
       </div>
 
@@ -636,28 +648,35 @@
 
     let selectedWalletCurr = 'RUB';
 
-    // === ЛОГИКА ПОЛУЧЕНИЯ БАЛАНСА ИЗ URL БОТА ===
+    // === ОБРАБОТКА МУЛЬТИ-ВАЛЮТНЫХ БАЛАНСОВ ===
     const urlParams = new URLSearchParams(window.location.search);
-    const balanceFromUrl = urlParams.get('balance');
 
-    let userBalance = 0;
+    const balances = {
+      RUB: parseFloat(urlParams.get('rub') ?? localStorage.getItem('bal_rub') ?? '0'),
+      STARS: parseFloat(urlParams.get('stars') ?? localStorage.getItem('bal_stars') ?? '0'),
+      USDT: parseFloat(urlParams.get('usdt') ?? localStorage.getItem('bal_usdt') ?? '0'),
+      TON: parseFloat(urlParams.get('ton') ?? localStorage.getItem('bal_ton') ?? '0'),
+      BTC: parseFloat(urlParams.get('btc') ?? localStorage.getItem('bal_btc') ?? '0')
+    };
 
-    if (balanceFromUrl !== null) {
-      userBalance = parseFloat(balanceFromUrl);
-      localStorage.setItem('user_app_balance', userBalance);
-    } else {
-      userBalance = parseFloat(localStorage.getItem('user_app_balance') || '0');
-    }
+    // Сохранение полученных балансов
+    localStorage.setItem('bal_rub', balances.RUB);
+    localStorage.setItem('bal_stars', balances.STARS);
+    localStorage.setItem('bal_usdt', balances.USDT);
+    localStorage.setItem('bal_ton', balances.TON);
+    localStorage.setItem('bal_btc', balances.BTC);
 
     function updateBalanceUI() {
-      const formatted = userBalance.toFixed(2) + ' ₽';
-      const profBal = document.getElementById('prof-balance-amount');
-      if (profBal) profBal.innerText = formatted;
+      document.getElementById('prof-bal-rub').innerText = balances.RUB.toFixed(2) + ' ₽';
+      document.getElementById('prof-bal-stars').innerText = balances.STARS + ' ⭐';
+      document.getElementById('prof-bal-usdt').innerText = balances.USDT.toFixed(2) + ' USDT';
+      document.getElementById('prof-bal-ton').innerText = balances.TON.toFixed(2) + ' TON';
+      document.getElementById('prof-bal-btc').innerText = balances.BTC.toFixed(4) + ' BTC';
 
-      if (selectedWalletCurr === 'RUB') {
-        const wBal = document.getElementById('w-bal');
-        if (wBal) wBal.innerText = formatted;
-      }
+      // Обновляем кошелек
+      const currentVal = balances[selectedWalletCurr] || 0;
+      const icon = currencyIcons[selectedWalletCurr] || '';
+      document.getElementById('w-bal').innerText = `${currentVal} ${icon}`;
     }
 
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -842,11 +861,8 @@
       document.getElementById('w-icon').innerText = icon;
       document.getElementById('w-name').innerText = name;
       
-      if (code === 'RUB') {
-        document.getElementById('w-bal').innerText = `${userBalance.toFixed(2)} ₽`;
-      } else {
-        document.getElementById('w-bal').innerText = `0 ${code}`;
-      }
+      const val = balances[code] || 0;
+      document.getElementById('w-bal').innerText = `${val} ${icon}`;
     }
 
     function openWithdrawModal() {
@@ -857,12 +873,13 @@
     function processWithdrawal() {
       const amt = parseFloat(document.getElementById('withdraw-amount').value || '0');
       const addr = document.getElementById('withdraw-address').value;
+      const userCurrBal = balances[selectedWalletCurr] || 0;
 
       if (!amt || amt <= 0) {
         tg.showAlert("Укажите сумму для вывода!");
         return;
       }
-      if (selectedWalletCurr === 'RUB' && amt > userBalance) {
+      if (amt > userCurrBal) {
         tg.showAlert("Недостаточно средств на балансе!");
         return;
       }
@@ -882,9 +899,9 @@
       alert("Запрос на вход отправлен");
     }
 
-    // Инициализация отображения
+    // Инициализация
     updateBalanceUI();
     renderDealsUI();
   </script>
 </body>
-</html>
+  </html>
