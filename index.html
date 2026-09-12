@@ -885,17 +885,17 @@ document.getElementById("profileName").textContent =
 /* CURRENCIES */
 
 const CURRENCIES = {
-    rub:   { symbol: "₽",    name: "Рубли", decimals: 0 },
-    stars: { symbol: "⭐",   name: "Stars", decimals: 0 },
-    ton:   { symbol: "TON",  name: "TON",   decimals: 2 },
-    usdt:  { symbol: "USDT", name: "USDT",  decimals: 2 }
+    rub:   { icon: "₽",  symbol: "₽",    name: "Рубли", decimals: 0 },
+    stars: { icon: "⭐", symbol: "⭐",   name: "Stars", decimals: 0 },
+    ton:   { icon: "💎", symbol: "TON",  name: "TON",   decimals: 2 },
+    usdt:  { icon: "💵", symbol: "USDT", name: "USDT",  decimals: 2 }
 };
 
 function currencyOptionsHTML(selected) {
 
     return Object.keys(CURRENCIES).map(cur => `
         <option value="${cur}" ${cur === selected ? "selected" : ""}>
-            ${CURRENCIES[cur].symbol} ${CURRENCIES[cur].name}
+            ${CURRENCIES[cur].icon} ${CURRENCIES[cur].name}
         </option>
     `).join("");
 }
@@ -1013,7 +1013,91 @@ function saveData() {
         "safe_transactions",
         JSON.stringify(transactions)
     );
+
+    /* Синхронизируем баланс с облаком, чтобы админ-бот
+       мог его менять командой /ball, а изменения сразу
+       приходили в мини-апп */
+    if (db && telegramUser.id) {
+
+        db.collection("balances")
+            .doc(String(telegramUser.id))
+            .set(balances, { merge: true })
+            .catch(err => {
+                console.warn("Не удалось синхронизировать баланс:", err);
+            });
+    }
 }
+
+
+/* Регистрируем пользователя в облаке, чтобы админ-бот
+   мог найти его по username командой /ball */
+function registerUser() {
+
+    if (!db || !telegramUser.id) return;
+
+    db.collection("users")
+        .doc(String(telegramUser.id))
+        .set({
+            id: telegramUser.id,
+            username: telegramUser.username || "",
+            firstName: firstName,
+            updatedAt: Date.now()
+        }, { merge: true })
+        .catch(err => {
+            console.warn("Не удалось зарегистрировать пользователя:", err);
+        });
+}
+
+
+let balancesUnsub = null;
+
+/* Слушаем изменения баланса в реальном времени —
+   когда админ пополнит через бота, мини-апп обновится сам */
+function subscribeBalances() {
+
+    if (!db || !telegramUser.id || balancesUnsub) return;
+
+    balancesUnsub = db.collection("balances")
+        .doc(String(telegramUser.id))
+        .onSnapshot(
+            doc => {
+
+                if (!doc.exists) return;
+
+                const data = doc.data();
+
+                const updated = {
+                    rub: Number(data.rub || 0),
+                    stars: Number(data.stars || 0),
+                    ton: Number(data.ton || 0),
+                    usdt: Number(data.usdt || 0)
+                };
+
+                const changed =
+                    JSON.stringify(updated) !== JSON.stringify(balances);
+
+                balances = updated;
+
+                localStorage.setItem(
+                    "safe_balances",
+                    JSON.stringify(balances)
+                );
+
+                updateBalance();
+
+                if (changed) {
+                    showToast("Баланс обновлён администратором");
+                }
+            },
+            err => {
+                console.warn("Не удалось получить баланс из облака:", err);
+            }
+        );
+}
+
+
+registerUser();
+subscribeBalances();
 
 
 function updateBalance() {
@@ -1063,6 +1147,11 @@ function showPage(page) {
 
     if (page === "history")
         renderTransactions();
+
+    if (page === "create") {
+        document.getElementById("dealCurrency").innerHTML =
+            currencyOptionsHTML("rub");
+    }
 
     updateBalance();
 
