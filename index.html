@@ -1338,6 +1338,154 @@ function contactSeller(username) {
 }
 
 
+/* Оплата товара прямо из публичного каталога */
+
+function openPayListing(id) {
+
+    const item = publicListings.find(
+        l => String(l.id) === String(id)
+    );
+
+    if (!item) {
+        showToast("Объявление больше не доступно");
+        return;
+    }
+
+    document.getElementById("modalBody").innerHTML = `
+
+        <div class="modal-title">
+            ⚠️ Подтверждение оплаты
+        </div>
+
+        <div class="card">
+
+            <b>${escapeHTML(item.title)}</b>
+
+            <p style="color:var(--muted);margin:6px 0 0">
+                ${item.category === "nft" ? "🖼️ NFT" : "🎁 Донат"}
+                ${item.sellerUsername ? " · Продавец: @" + escapeHTML(item.sellerUsername) : " · Продавец не указан"}
+            </p>
+
+            <div style="font-size:22px;font-weight:800;margin:10px 0 0">
+                ${formatMoney(item.price, item.currency)}
+            </div>
+
+        </div>
+
+        <div class="card" style="background:#fff7e6;border-color:#f5dca0">
+
+            <b style="color:#b77900">⚠️ Будьте осторожны</b>
+
+            <p style="color:var(--muted);line-height:1.5;margin-top:6px">
+                Деньги спишутся с вашего баланса сразу. Это объявление
+                создано другим пользователем — SafeDeal не проверяет
+                его содержание и не гарантирует, что продавец
+                выполнит свои обязательства. Убедитесь, что доверяете
+                продавцу, прежде чем платить. Если возникнет спор —
+                используйте раздел «Арбитраж».
+            </p>
+
+        </div>
+
+        <button
+            class="primary"
+            style="width:100%;margin-bottom:8px"
+            onclick="confirmPayListing('${item.id}')">
+            Подтвердить оплату
+        </button>
+
+        <button
+            class="secondary"
+            style="width:100%"
+            onclick="closeModal()">
+            Отмена
+        </button>
+    `;
+
+    document.getElementById("modal")
+        .classList.add("show");
+}
+
+
+function confirmPayListing(id) {
+
+    const item = publicListings.find(
+        l => String(l.id) === String(id)
+    );
+
+    if (!item) {
+        closeModal();
+        showToast("Объявление больше не доступно");
+        return;
+    }
+
+    const currency = item.currency || "rub";
+
+    if (balances[currency] < item.price) {
+        showToast(
+            "Недостаточно средств на балансе (" +
+            CURRENCIES[currency].name +
+            ")"
+        );
+        return;
+    }
+
+
+    balances[currency] -= item.price;
+
+    const deal = {
+
+        id: Date.now(),
+
+        code: item.code,
+
+        title: item.title,
+
+        category: item.category,
+
+        price: item.price,
+
+        currency,
+
+        role: "buyer",
+
+        description:
+            "Куплено в каталоге у " +
+            (item.sellerUsername ? "@" + item.sellerUsername : "продавца"),
+
+        status: "paid",
+
+        createdAt: new Date().toLocaleString("ru-RU")
+
+    };
+
+    deals.unshift(deal);
+
+    transactions.unshift({
+
+        title: "Оплата по объявлению: " + deal.title,
+
+        amount: -item.price,
+
+        currency,
+
+        date: new Date().toLocaleString("ru-RU")
+
+    });
+
+
+    saveData();
+
+    closeModal();
+
+    updateBalance();
+
+    renderDeals();
+
+    showToast("Оплата прошла успешно");
+}
+
+
 function renderDeals() {
 
     const container =
@@ -1513,6 +1661,12 @@ function renderAllListings(container, query) {
                 <button
                     class="primary"
                     style="flex:1"
+                    onclick="openPayListing('${item.id}')">
+                    Оплатить
+                </button>
+
+                <button
+                    class="secondary"
                     onclick="contactSeller('${item.sellerUsername || ""}')">
                     Написать продавцу
                 </button>
