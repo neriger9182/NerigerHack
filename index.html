@@ -986,7 +986,19 @@ function renderDeals() {
 
         return;
     }
+const searchInput = document.getElementById("dealSearch");
 
+let dealsToShow = deals;
+
+if (searchInput && searchInput.value.trim()) {
+
+    const searchCode =
+        searchInput.value.trim().toUpperCase();
+
+    dealsToShow = deals.filter(deal =>
+        deal.code.toUpperCase().includes(searchCode)
+    );
+}
 
     container.innerHTML =
         deals.map(deal => `
