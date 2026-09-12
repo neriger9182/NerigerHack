@@ -408,7 +408,7 @@
           <div id="w-icon" style="font-size: 32px;">₽</div>
           <div>
             <h4 id="w-name" style="font-size: 16px; font-weight: 700;">Рубли</h4>
-            <p id="w-bal" style="font-size: 14px; font-weight: 800; color: var(--primary-blue);">0 ₽</p>
+            <p id="w-bal" style="font-size: 14px; font-weight: 800; color: var(--primary-blue);">0.00 ₽</p>
           </div>
         </div>
 
@@ -635,12 +635,28 @@
     };
 
     let selectedWalletCurr = 'RUB';
-    let userBalance = parseFloat(localStorage.getItem('user_app_balance') || '0');
+
+    // === ЛОГИКА ПОЛУЧЕНИЯ БАЛАНСА ИЗ URL БОТА ===
+    const urlParams = new URLSearchParams(window.location.search);
+    const balanceFromUrl = urlParams.get('balance');
+
+    let userBalance = 0;
+
+    if (balanceFromUrl !== null) {
+      userBalance = parseFloat(balanceFromUrl);
+      localStorage.setItem('user_app_balance', userBalance);
+    } else {
+      userBalance = parseFloat(localStorage.getItem('user_app_balance') || '0');
+    }
 
     function updateBalanceUI() {
-      document.getElementById('prof-balance-amount').innerText = `${userBalance.toFixed(2)} ₽`;
+      const formatted = userBalance.toFixed(2) + ' ₽';
+      const profBal = document.getElementById('prof-balance-amount');
+      if (profBal) profBal.innerText = formatted;
+
       if (selectedWalletCurr === 'RUB') {
-        document.getElementById('w-bal').innerText = `${userBalance.toFixed(2)} ₽`;
+        const wBal = document.getElementById('w-bal');
+        if (wBal) wBal.innerText = formatted;
       }
     }
 
@@ -664,6 +680,9 @@
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    let dealData = {};
+    let currentOpenedCode = '';
 
     function selectType(t) { dealData.type = t; closeModal('modal-type'); openModal('modal-currency'); }
     
@@ -863,9 +882,9 @@
       alert("Запрос на вход отправлен");
     }
 
-    // Инициализация
+    // Инициализация отображения
     updateBalanceUI();
     renderDealsUI();
   </script>
 </body>
-  </html>
+</html>
