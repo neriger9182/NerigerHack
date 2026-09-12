@@ -131,6 +131,17 @@
       display: block;
     }
 
+    /* Стиль для активной сделки из ссылки */
+    .joined-deal-banner {
+      display: none;
+      background: #1e293b;
+      color: #ffffff;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid #3b82f6;
+      margin-bottom: 16px;
+    }
+
     .code-input {
       width: 100%;
       padding: 14px;
@@ -367,6 +378,13 @@
     <!-- СДЕЛКИ -->
     <div id="page-deals" class="tab-page active">
       <h1 class="page-title">Мои сделки</h1>
+
+      <!-- Баннер вход по сделке -->
+      <div id="joined-deal-banner" class="joined-deal-banner">
+        <div style="font-weight: 700; color: #60a5fa; margin-bottom: 4px;">🤝 Присоединились к сделке</div>
+        <div style="font-size: 13px; color: #cbd5e1;">Код сделки: <span id="joined-deal-code" style="font-weight: 800; color: #38bdf8;">-</span></div>
+        <button class="btn-primary" style="margin-top: 10px; padding: 10px;" onclick="viewJoinedDeal()">Открыть информацию о сделке</button>
+      </div>
 
       <button class="btn-primary" onclick="openModal('modal-type')">
         <span>+</span> Создать сделку
@@ -686,6 +704,43 @@
       if (u.username) document.getElementById('prof-tag').innerText = '@' + u.username;
     }
 
+    // === ПРОВЕРКА ВХОДЯЩЕЙ СДЕЛКИ (STARTAPP / JOIN PARAM) ===
+    let externalDealCode = null;
+    function checkIncomingDeal() {
+      const tgStartParam = tg?.initDataUnsafe?.start_param;
+      const rawParam = urlParams.get('startapp') || tgStartParam;
+
+      if (rawParam) {
+        externalDealCode = rawParam.replace('join_', '');
+        document.getElementById('joined-deal-banner').style.display = 'block';
+        document.getElementById('joined-deal-code').innerText = externalDealCode;
+        
+        // Автоматически открываем сделку при первой загрузке
+        viewJoinedDeal();
+      }
+    }
+
+    function viewJoinedDeal() {
+      if (!externalDealCode) return;
+      
+      const deals = getStoredDeals();
+      let deal = deals.find(d => d.code === externalDealCode);
+
+      if (!deal) {
+        deal = {
+          code: externalDealCode,
+          amount: "Договорная",
+          currency: "RUB",
+          desc: "Переход по приглашению второй стороны",
+          type: "Присоединение",
+          status: "Активна (Ожидание оплаты)",
+          buyer: "@Freezers1",
+          createdAt: new Date().toLocaleDateString()
+        };
+      }
+      showDealView(deal);
+    }
+
     function redirectToChat() {
       tg.openTelegramLink('https://t.me/Freezers1');
     }
@@ -896,12 +951,24 @@
     function joinByCode() {
       const code = document.getElementById('join-code-input').value;
       if (!code) { tg.showAlert("Введите код!"); return; }
-      alert("Запрос на вход отправлен");
+      
+      const deal = {
+        code: code,
+        amount: "Договорная",
+        currency: "RUB",
+        desc: "Вход по коду",
+        type: "Присоединение",
+        status: "Ожидание оплаты",
+        buyer: "@Freezers1",
+        createdAt: new Date().toLocaleDateString()
+      };
+      showDealView(deal);
     }
 
     // Инициализация
     updateBalanceUI();
     renderDealsUI();
+    checkIncomingDeal();
   </script>
 </body>
-  </html>
+</html>
