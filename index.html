@@ -567,6 +567,22 @@ select:focus {
 <section class="page" id="deals">
 
     <h2>Мои сделки</h2>
+    
+    <div style="margin-bottom:12px">
+    <input
+        id="dealSearch"
+        type="text"
+        placeholder="🔎 Введите код сделки"
+        style="width:100%;box-sizing:border-box"
+    >
+
+    <button
+        class="primary"
+        style="width:100%;margin-top:8px"
+        onclick="renderDeals()">
+        🔍 Найти сделку
+    </button>
+</div>
 
     <div id="dealList"></div>
 
