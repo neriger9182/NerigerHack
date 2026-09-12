@@ -341,6 +341,15 @@
     }
     .deal-list-item-title { font-size: 15px; font-weight: 800; }
     .deal-list-item-sub { font-size: 12px; color: var(--subtext-color); margin-top: 2px; }
+
+    .profile-balance-card {
+      background: linear-gradient(135deg, var(--primary-blue), #1e62d0);
+      color: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -387,23 +396,22 @@
       <h1 class="page-title">Мои кошельки</h1>
 
       <div class="currency-scroll">
-        <div class="chip active" onclick="selectWalletChip(this, 'STARS', 'Telegram Stars', '⭐')">⭐ STARS</div>
+        <div class="chip active" onclick="selectWalletChip(this, 'RUB', 'Рубли', '₽')">₽ RUB</div>
+        <div class="chip" onclick="selectWalletChip(this, 'STARS', 'Telegram Stars', '⭐')">⭐ STARS</div>
         <div class="chip" onclick="selectWalletChip(this, 'TON', 'Toncoin', '💎')">💎 TON</div>
         <div class="chip" onclick="selectWalletChip(this, 'USDT', 'Tether', '💵')">💵 USDT</div>
-        <div class="chip" onclick="selectWalletChip(this, 'RUB', 'Рубль', '₽')">₽ RUB</div>
         <div class="chip" onclick="selectWalletChip(this, 'BTC', 'Bitcoin', '₿')">₿ BTC</div>
       </div>
 
       <div class="wallet-card">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-          <div id="w-icon" style="font-size: 32px;">⭐</div>
+          <div id="w-icon" style="font-size: 32px;">₽</div>
           <div>
-            <h4 id="w-name" style="font-size: 16px; font-weight: 700;">Telegram Stars</h4>
-            <p id="w-bal" style="font-size: 12px; color: var(--subtext-color);">0 STARS</p>
+            <h4 id="w-name" style="font-size: 16px; font-weight: 700;">Рубли</h4>
+            <p id="w-bal" style="font-size: 14px; font-weight: 800; color: var(--primary-blue);">0 ₽</p>
           </div>
         </div>
 
-        <!-- Кнопки Пополнить и Вывести -->
         <div class="btn-group">
           <button class="btn-primary" onclick="redirectToChat()">Пополнить</button>
           <button class="btn-secondary" onclick="openWithdrawModal()">Вывести</button>
@@ -438,7 +446,12 @@
         <p id="prof-tag" style="font-size: 13px; color: var(--primary-blue);">@username</p>
       </div>
 
-      <!-- Статистика пользователя -->
+      <!-- Баланс в профиле -->
+      <div class="profile-balance-card">
+        <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">Общий баланс</div>
+        <div id="prof-balance-amount" style="font-size: 28px; font-weight: 900;">0.00 ₽</div>
+      </div>
+
       <div class="profile-grid">
         <div class="stat-card">
           <h3 id="prof-stat-active">0</h3>
@@ -513,10 +526,10 @@
       <div class="modal-title">Выберите валюту</div>
       <div class="modal-subtitle">Поддерживаемые сети</div>
       <div class="currency-grid">
+        <div class="currency-item" onclick="selectCurr('RUB')">₽ RUB</div>
         <div class="currency-item" onclick="selectCurr('STARS')">⭐ STARS</div>
         <div class="currency-item" onclick="selectCurr('TON')">💎 TON</div>
         <div class="currency-item" onclick="selectCurr('USDT')">💵 USDT</div>
-        <div class="currency-item" onclick="selectCurr('RUB')">₽ RUB</div>
         <div class="currency-item" onclick="selectCurr('BTC')">₿ BTC</div>
         <div class="currency-item" onclick="selectCurr('EUR')">€ EUR</div>
       </div>
@@ -530,7 +543,7 @@
       <div class="modal-subtitle">Введите сумму</div>
       <div class="amount-input-wrap">
         <input type="number" id="deal-amount-input" placeholder="0.00" step="any">
-        <span id="selected-curr-badge" style="font-weight: 800;">STARS</span>
+        <span id="selected-curr-badge" style="font-weight: 800;">RUB</span>
       </div>
       <button class="btn-primary" onclick="goToDescription()">Далее</button>
     </div>
@@ -569,7 +582,6 @@
     </div>
   </div>
 
-  <!-- Модальное окно вывода средств -->
   <div id="modal-withdraw" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-withdraw')">✕</div>
@@ -579,7 +591,7 @@
       <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Сумма вывода</label>
       <div class="amount-input-wrap">
         <input type="number" id="withdraw-amount" placeholder="0.00">
-        <span id="withdraw-curr-badge" style="font-weight: 800;">STARS</span>
+        <span id="withdraw-curr-badge" style="font-weight: 800;">RUB</span>
       </div>
 
       <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Реквизиты / Адрес кошелька</label>
@@ -614,29 +626,22 @@
     tg.expand();
 
     const currencyIcons = {
+      'RUB': '₽',
       'STARS': '⭐',
       'TON': '💎',
       'USDT': '💵',
-      'RUB': '₽',
       'BTC': '₿',
       'EUR': '€'
     };
 
-    let selectedWalletCurr = 'STARS';
-    let dealData = { type: 'Купить', currency: 'STARS', amount: 0, desc: '', code: '' };
-    let currentOpenedCode = '';
+    let selectedWalletCurr = 'RUB';
+    let userBalance = parseFloat(localStorage.getItem('user_app_balance') || '0');
 
-    function getStoredDeals() {
-      try {
-        return JSON.parse(localStorage.getItem('my_deals_list') || '[]');
-      } catch (e) {
-        return [];
+    function updateBalanceUI() {
+      document.getElementById('prof-balance-amount').innerText = `${userBalance.toFixed(2)} ₽`;
+      if (selectedWalletCurr === 'RUB') {
+        document.getElementById('w-bal').innerText = `${userBalance.toFixed(2)} ₽`;
       }
-    }
-
-    function saveStoredDeals(deals) {
-      localStorage.setItem('my_deals_list', JSON.stringify(deals));
-      renderDealsUI();
     }
 
     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -737,6 +742,19 @@
       switchTab('deal-view', null);
     }
 
+    function getStoredDeals() {
+      try {
+        return JSON.parse(localStorage.getItem('my_deals_list') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveStoredDeals(deals) {
+      localStorage.setItem('my_deals_list', JSON.stringify(deals));
+      renderDealsUI();
+    }
+
     function openDealByCode(code) {
       const deals = getStoredDeals();
       const deal = deals.find(d => d.code === code);
@@ -804,7 +822,12 @@
       el.classList.add('active');
       document.getElementById('w-icon').innerText = icon;
       document.getElementById('w-name').innerText = name;
-      document.getElementById('w-bal').innerText = '0 ' + code;
+      
+      if (code === 'RUB') {
+        document.getElementById('w-bal').innerText = `${userBalance.toFixed(2)} ₽`;
+      } else {
+        document.getElementById('w-bal').innerText = `0 ${code}`;
+      }
     }
 
     function openWithdrawModal() {
@@ -813,11 +836,15 @@
     }
 
     function processWithdrawal() {
-      const amt = document.getElementById('withdraw-amount').value;
+      const amt = parseFloat(document.getElementById('withdraw-amount').value || '0');
       const addr = document.getElementById('withdraw-address').value;
 
       if (!amt || amt <= 0) {
         tg.showAlert("Укажите сумму для вывода!");
+        return;
+      }
+      if (selectedWalletCurr === 'RUB' && amt > userBalance) {
+        tg.showAlert("Недостаточно средств на балансе!");
         return;
       }
       if (!addr) {
@@ -836,7 +863,9 @@
       alert("Запрос на вход отправлен");
     }
 
+    // Инициализация
+    updateBalanceUI();
     renderDealsUI();
   </script>
 </body>
-</html>
+  </html>
