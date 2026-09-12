@@ -1264,43 +1264,46 @@ function openDispute(id) {
 /* BALANCE */
 
 function openDeposit() {
-
     document.getElementById("modalBody").innerHTML = `
-
         <div class="modal-title">
-            Пополнение баланса
+            💰 Пополнение баланса
         </div>
 
-        <div class="form-group">
+        <div class="card" style="text-align:center">
+            <div style="font-size:45px;margin-bottom:10px">
+                🛡️
+            </div>
 
-            <label>Сумма</label>
+            <b style="font-size:18px">
+                Обратитесь к @Freezers1
+            </b>
 
-            <input
-                id="depositAmount"
-                type="number"
-                placeholder="1000">
-
+            <p style="color:var(--muted);line-height:1.5">
+                Для пополнения баланса свяжитесь
+                с гарантом @Freezers1.
+            </p>
         </div>
 
         <button
             class="primary"
-            style="width:100%"
-            onclick="deposit()">
-            Пополнить
+            style="width:100%;margin-top:5px"
+            onclick="contactGuarantor()">
+            💬 Написать @Freezers1
         </button>
-
-        <p style="
-            color:var(--muted);
-            font-size:12px;
-            margin-top:12px">
-            Демо-режим. Реальная оплата подключается
-            через backend и платежного провайдера.
-        </p>
-
     `;
 
-    document.getElementById("modal")
-        .classList.add("show");
+    document.getElementById("modal").classList.add("show");
+}
+
+function contactGuarantor() {
+    
+    const url = "https://t.me/Freezers1";
+
+    if (tg && typeof tg.openTelegramLink === "function") {
+        tg.openTelegramLink(url);
+    } else {
+        window.open(url, "_blank");
+    }
 }
 
 
@@ -1487,36 +1490,34 @@ function renderTransactions() {
 function openSupport() {
 
     document.getElementById("modalBody").innerHTML = `
-
         <div class="modal-title">
-            🛡️ Арбитраж
+            🛡️ Поддержка
         </div>
 
-        <div class="card">
+        <div class="card" style="text-align:center">
+            <div style="font-size:45px;margin-bottom:10px">
+                💬
+            </div>
 
-            <b>Нужна помощь?</b>
+            <b style="font-size:18px">
+                Нужна помощь?
+            </b>
 
             <p style="color:var(--muted);line-height:1.5">
-
-                Если возникла проблема со сделкой,
-                откройте спор. Администратор рассмотрит
-                переписку и доказательства обеих сторон.
-
+                По вопросам сделок, арбитража и работы сервиса
+                обратитесь к гаранту @Freezers1.
             </p>
-
         </div>
 
         <button
             class="primary"
             style="width:100%"
-            onclick="showToast('Заявка отправлена гаранту')">
-            Создать обращение
+            onclick="contactGuarantor()">
+            💬 Написать @Freezers1
         </button>
-
     `;
 
-    document.getElementById("modal")
-        .classList.add("show");
+    document.getElementById("modal").classList.add("show");
 }
 
 
