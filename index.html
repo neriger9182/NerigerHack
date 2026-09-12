@@ -6,6 +6,8 @@
 <title>SafeDeal</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
 * {
@@ -115,6 +117,31 @@ body {
     margin: 7px 0 16px;
 }
 
+.balances-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.balance-item {
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.balance-item-label {
+    font-size: 11px;
+    opacity: .85;
+}
+
+.balance-item-amount {
+    font-size: 16px;
+    font-weight: 800;
+    margin-top: 3px;
+}
+
 .balance-buttons {
     display: flex;
     gap: 8px;
@@ -155,6 +182,11 @@ button {
 .danger {
     background: #fff0f0;
     color: var(--red);
+}
+
+.deal-tab.active {
+    background: var(--primary);
+    color: white;
 }
 
 /* HOME */
@@ -511,7 +543,8 @@ select:focus {
 
     <div class="card balance-card">
         <div class="balance-title">Ваш баланс</div>
-        <div class="balance" id="balance">0 ₽</div>
+
+        <div class="balances-grid" id="balancesGrid"></div>
 
         <div class="balance-buttons">
             <button onclick="openDeposit()">Пополнить</button>
@@ -566,23 +599,33 @@ select:focus {
 
 <section class="page" id="deals">
 
-    <h2>Мои сделки</h2>
-    
-    <div style="margin-bottom:12px">
-    <input
-        id="dealSearch"
-        type="text"
-        placeholder="🔎 Введите код сделки"
-        style="width:100%;box-sizing:border-box"
-    >
+    <h2>Сделки</h2>
 
-    <button
-        class="primary"
-        style="width:100%;margin-top:8px"
-        onclick="renderDeals()">
-        🔍 Найти сделку
-    </button>
-</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button
+            class="secondary deal-tab active"
+            data-tab="mine"
+            style="flex:1"
+            onclick="switchDealsTab('mine')">
+            Мои сделки
+        </button>
+
+        <button
+            class="secondary deal-tab"
+            data-tab="all"
+            style="flex:1"
+            onclick="switchDealsTab('all')">
+            🌐 Все объявления
+        </button>
+    </div>
+
+    <div class="form-group">
+        <input
+            id="dealSearch"
+            type="text"
+            placeholder="Поиск по названию или коду сделки"
+            oninput="renderDeals()">
+    </div>
 
     <div id="dealList"></div>
 
@@ -607,12 +650,27 @@ select:focus {
         </div>
 
         <div class="form-group">
+            <label>Категория</label>
+
+            <select id="dealCategory">
+                <option value="donate">🎁 Донат</option>
+                <option value="nft">🖼️ NFT</option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label>Название товара / услуги</label>
 
             <input
                 id="dealTitle"
-                placeholder="Например: аккаунт Steam"
+                placeholder="Например: Донат Telegram Stars 500"
             >
+        </div>
+
+        <div class="form-group">
+            <label>Валюта</label>
+
+            <select id="dealCurrency"></select>
         </div>
 
         <div class="form-group">
@@ -621,6 +679,7 @@ select:focus {
             <input
                 id="dealPrice"
                 type="number"
+                step="any"
                 placeholder="1000"
             >
         </div>
@@ -823,11 +882,109 @@ document.getElementById("profileName").textContent =
         : firstName;
 
 
+/* CURRENCIES */
+
+const CURRENCIES = {
+    rub:   { symbol: "₽",    name: "Рубли", decimals: 0 },
+    stars: { symbol: "⭐",   name: "Stars", decimals: 0 },
+    ton:   { symbol: "TON",  name: "TON",   decimals: 2 },
+    usdt:  { symbol: "USDT", name: "USDT",  decimals: 2 }
+};
+
+function currencyOptionsHTML(selected) {
+
+    return Object.keys(CURRENCIES).map(cur => `
+        <option value="${cur}" ${cur === selected ? "selected" : ""}>
+            ${CURRENCIES[cur].symbol} ${CURRENCIES[cur].name}
+        </option>
+    `).join("");
+}
+
+function formatMoney(amount, currency) {
+
+    const c = CURRENCIES[currency] || CURRENCIES.rub;
+
+    const formatted = Number(amount || 0).toLocaleString("ru-RU", {
+        minimumFractionDigits: c.decimals,
+        maximumFractionDigits: c.decimals
+    });
+
+    return formatted + " " + c.symbol;
+}
+
+
+/* ==========================================================
+   ПУБЛИЧНЫЙ КАТАЛОГ (Firebase Firestore)
+   ==========================================================
+   Чтобы поиск сделок ДРУГИХ пользователей реально работал,
+   нужна общая база в облаке — localStorage хранит данные
+   только в браузере одного человека.
+
+   Как настроить (один раз, бесплатно, ~5 минут):
+   1. Зайти на https://console.firebase.google.com
+   2. Создать проект (Add project).
+   3. В разделе Build → Firestore Database → Create database
+      (режим "Start in test mode" для начала).
+   4. В настройках проекта (⚙️ → Project settings) найти блок
+      "Your apps" → добавить Web-приложение → скопировать
+      firebaseConfig и вставить его сюда вместо значений ниже.
+   5. В Firestore → Rules разрешить публичное чтение каталога
+      и запись только с обязательными полями, например:
+
+      rules_version = '2';
+      service cloud.firestore {
+        match /databases/{database}/documents {
+          match /listings/{listingId} {
+            allow read: if true;
+            allow write: if request.resource.data.keys().hasAll(
+              ['code','title','category','price','currency','createdAt']
+            );
+          }
+        }
+      }
+
+   Пока конфиг не заполнен, вкладка "Все объявления" будет
+   честно показывать, что публичный поиск не настроен —
+   никаких поддельных сделок это приложение не показывает.
+   ========================================================== */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBDIQzB_PnA-sJBkiS3qvhsRFvPZF1VRlY",
+    authDomain: "bottg-ba1d7.firebaseapp.com",
+    projectId: "bottg-ba1d7",
+    storageBucket: "bottg-ba1d7.firebasestorage.app",
+    messagingSenderId: "60610544826",
+    appId: "1:60610544826:web:dd3e1cb916af1596a7ae83"
+};
+
+let db = null;
+
+try {
+
+    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "ВАШ_API_KEY") {
+
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+    }
+
+} catch (e) {
+
+    console.warn("Firebase не настроен:", e);
+    db = null;
+}
+
+
 /* DATA */
 
-let balance = Number(
-    localStorage.getItem("safe_balance") || 0
-);
+let balances =
+    JSON.parse(
+        localStorage.getItem("safe_balances") || "null"
+    ) || {
+        rub: Number(localStorage.getItem("safe_balance") || 0),
+        stars: 0,
+        ton: 0,
+        usdt: 0
+    };
 
 let deals =
     JSON.parse(
@@ -843,8 +1000,8 @@ let transactions =
 function saveData() {
 
     localStorage.setItem(
-        "safe_balance",
-        balance
+        "safe_balances",
+        JSON.stringify(balances)
     );
 
     localStorage.setItem(
@@ -861,8 +1018,17 @@ function saveData() {
 
 function updateBalance() {
 
-    document.getElementById("balance").textContent =
-        balance.toLocaleString("ru-RU") + " ₽";
+    document.getElementById("balancesGrid").innerHTML =
+        Object.keys(CURRENCIES).map(cur => `
+            <div class="balance-item">
+                <div class="balance-item-label">
+                    ${CURRENCIES[cur].name}
+                </div>
+                <div class="balance-item-amount">
+                    ${formatMoney(balances[cur], cur)}
+                </div>
+            </div>
+        `).join("");
 
     document.getElementById("dealCount").textContent =
         deals.length;
@@ -890,8 +1056,10 @@ function showPage(page) {
 
         });
 
-    if (page === "deals")
+    if (page === "deals") {
+        ensurePublicListingsListener();
         renderDeals();
+    }
 
     if (page === "history")
         renderTransactions();
@@ -906,6 +1074,9 @@ function showPage(page) {
 
 function openCreateDeal() {
 
+    document.getElementById("dealCurrency").innerHTML =
+        currencyOptionsHTML("rub");
+
     showPage("create");
 
 }
@@ -916,8 +1087,14 @@ function createDeal() {
     const title =
         document.getElementById("dealTitle").value.trim();
 
+    const category =
+        document.getElementById("dealCategory").value || "donate";
+
     const price =
         Number(document.getElementById("dealPrice").value);
+
+    const currency =
+        document.getElementById("dealCurrency").value || "rub";
 
     const role =
         document.getElementById("role").value;
@@ -953,7 +1130,11 @@ function createDeal() {
 
         title,
 
+        category,
+
         price,
+
+        currency,
 
         role,
 
@@ -969,6 +1150,26 @@ function createDeal() {
     deals.unshift(deal);
 
     saveData();
+
+    /* Публикуем в общем каталоге только объявления
+       продавцов — это то, что реально можно найти
+       и купить у другого пользователя */
+    if (db && role === "seller") {
+
+        db.collection("listings").doc(String(deal.id)).set({
+            id: deal.id,
+            code: deal.code,
+            title: deal.title,
+            category: deal.category,
+            price: deal.price,
+            currency: deal.currency,
+            sellerUsername: telegramUser.username || "",
+            sellerName: firstName,
+            createdAt: Date.now()
+        }).catch(err => {
+            console.warn("Не удалось опубликовать объявление:", err);
+        });
+    }
 
     document.getElementById("dealTitle").value = "";
     document.getElementById("dealPrice").value = "";
@@ -986,10 +1187,97 @@ function createDeal() {
 
 /* DEALS */
 
+let dealsTab = "mine";
+let publicListings = [];
+let publicListingsUnsub = null;
+
+function switchDealsTab(tab) {
+
+    dealsTab = tab;
+
+    document.querySelectorAll(".deal-tab")
+        .forEach(btn => {
+            btn.classList.toggle("active", btn.dataset.tab === tab);
+        });
+
+    if (tab === "all") {
+        ensurePublicListingsListener();
+    }
+
+    renderDeals();
+}
+
+
+function ensurePublicListingsListener() {
+
+    if (!db || publicListingsUnsub) return;
+
+    publicListingsUnsub = db.collection("listings")
+        .orderBy("createdAt", "desc")
+        .limit(200)
+        .onSnapshot(
+            snapshot => {
+
+                publicListings =
+                    snapshot.docs.map(doc => doc.data());
+
+                if (dealsTab === "all") {
+                    renderDeals();
+                }
+            },
+            err => {
+                console.warn("Не удалось загрузить объявления:", err);
+            }
+        );
+}
+
+
+function contactSeller(username) {
+
+    if (!username) {
+        showToast("У продавца не указан username Telegram");
+        return;
+    }
+
+    const url = "https://t.me/" + username;
+
+    if (tg?.openTelegramLink) {
+        tg.openTelegramLink(url);
+    } else {
+        window.open(url, "_blank");
+    }
+}
+
+
 function renderDeals() {
 
     const container =
         document.getElementById("dealList");
+
+    const searchInput =
+        document.getElementById("dealSearch");
+
+    const query =
+        (searchInput?.value || "")
+            .trim()
+            .toLowerCase();
+
+    if (dealsTab === "all") {
+        renderAllListings(container, query);
+    } else {
+        renderMineDeals(container, query);
+    }
+}
+
+
+function renderMineDeals(container, query) {
+
+    const filtered = !query
+        ? deals
+        : deals.filter(deal =>
+            deal.title.toLowerCase().includes(query) ||
+            deal.code.toLowerCase().includes(query)
+        );
 
     if (!deals.length) {
 
@@ -1002,22 +1290,22 @@ function renderDeals() {
 
         return;
     }
-const searchInput = document.getElementById("dealSearch");
 
-let dealsToShow = deals;
+    if (!filtered.length) {
 
-if (searchInput && searchInput.value.trim()) {
+        container.innerHTML = `
+            <div class="card empty">
+                <div class="empty-icon">🔍</div>
+                Ничего не найдено
+            </div>
+        `;
 
-    const searchCode =
-        searchInput.value.trim().toUpperCase();
+        return;
+    }
 
-    dealsToShow = deals.filter(deal =>
-        deal.code.toUpperCase().includes(searchCode)
-    );
-}
 
     container.innerHTML =
-        dealsToShow.map(deal => `
+        filtered.map(deal => `
 
         <div class="card">
 
@@ -1040,7 +1328,7 @@ if (searchInput && searchInput.value.trim()) {
                 </div>
 
                 <div class="deal-price">
-                    ${deal.price.toLocaleString("ru-RU")} ₽
+                    ${formatMoney(deal.price, deal.currency)}
                 </div>
 
             </div>
@@ -1058,6 +1346,86 @@ if (searchInput && searchInput.value.trim()) {
                     class="danger"
                     onclick="cancelDeal(${deal.id})">
                     Отменить
+                </button>
+
+            </div>
+
+        </div>
+
+    `).join("");
+}
+
+
+function renderAllListings(container, query) {
+
+    if (!db) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                <div class="empty-icon">🌐</div>
+                Публичный поиск ещё не настроен
+                (нужно подключить Firebase — см. комментарий
+                в начале скрипта).
+            </div>
+        `;
+
+        return;
+    }
+
+    const filtered = !query
+        ? publicListings
+        : publicListings.filter(item =>
+            (item.title || "").toLowerCase().includes(query) ||
+            (item.code || "").toLowerCase().includes(query) ||
+            (item.category || "").toLowerCase().includes(query)
+        );
+
+    if (!filtered.length) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                <div class="empty-icon">🔍</div>
+                Объявлений не найдено
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        filtered.map(item => `
+
+        <div class="card">
+
+            <div class="deal">
+
+                <div class="deal-info">
+
+                    <div class="deal-title">
+                        ${escapeHTML(item.title)}
+                    </div>
+
+                    <div class="deal-code">
+                        ${item.category === "nft" ? "🖼️ NFT" : "🎁 Донат"}
+                        ${item.sellerUsername ? " · @" + escapeHTML(item.sellerUsername) : ""}
+                    </div>
+
+                </div>
+
+                <div class="deal-price">
+                    ${formatMoney(item.price, item.currency)}
+                </div>
+
+            </div>
+
+            <div style="display:flex;gap:7px;margin-top:13px">
+
+                <button
+                    class="primary"
+                    style="flex:1"
+                    onclick="contactSeller('${item.sellerUsername || ""}')">
+                    Написать продавцу
                 </button>
 
             </div>
@@ -1115,7 +1483,7 @@ function openDeal(id) {
             <b>Цена</b>
 
             <div style="font-size:21px;font-weight:800;margin:5px 0 15px">
-                ${deal.price.toLocaleString("ru-RU")} ₽
+                ${formatMoney(deal.price, deal.currency)}
             </div>
 
             <b>Описание</b>
@@ -1172,20 +1540,25 @@ function payDeal(id) {
 
     if (!deal) return;
 
+    const currency = deal.currency || "rub";
 
-    if (balance < deal.price) {
+    if (balances[currency] < deal.price) {
 
         showToast(
-            "Недостаточно средств на балансе"
+            "Недостаточно средств на балансе (" +
+            CURRENCIES[currency].name +
+            ")"
         );
 
         return;
     }
 
 
-    balance -= deal.price;
+    balances[currency] -= deal.price;
 
     deal.status = "paid";
+
+    removeListing(deal.id);
 
 
     transactions.unshift({
@@ -1193,6 +1566,8 @@ function payDeal(id) {
         title: "Оплата сделки " + deal.code,
 
         amount: -deal.price,
+
+        currency,
 
         date: new Date().toLocaleString("ru-RU")
 
@@ -1219,6 +1594,7 @@ function completeDeal(id) {
 
     if (!deal) return;
 
+    const currency = deal.currency || "rub";
 
     deal.status = "completed";
 
@@ -1229,12 +1605,14 @@ function completeDeal(id) {
 
         amount: deal.price,
 
+        currency,
+
         date: new Date().toLocaleString("ru-RU")
 
     });
 
 
-    balance += deal.price;
+    balances[currency] += deal.price;
 
 
     saveData();
@@ -1250,6 +1628,17 @@ function completeDeal(id) {
 }
 
 
+function removeListing(id) {
+
+    if (!db) return;
+
+    db.collection("listings").doc(String(id)).delete()
+        .catch(err => {
+            console.warn("Не удалось удалить объявление:", err);
+        });
+}
+
+
 function cancelDeal(id) {
 
     if (!confirm("Отменить сделку?"))
@@ -1257,6 +1646,8 @@ function cancelDeal(id) {
 
     deals =
         deals.filter(d => d.id !== id);
+
+    removeListing(id);
 
     saveData();
 
@@ -1286,52 +1677,62 @@ function openDispute(id) {
 
     showToast("Арбитраж открыт");
 
+    openAdminChat();
+
 }
 
 
 /* BALANCE */
 
 function openDeposit() {
+
     document.getElementById("modalBody").innerHTML = `
+
         <div class="modal-title">
-            💰 Пополнение баланса
+            Пополнение баланса
         </div>
 
-        <div class="card" style="text-align:center">
-            <div style="font-size:45px;margin-bottom:10px">
-                🛡️
-            </div>
+        <div class="form-group">
 
-            <b style="font-size:18px">
-                Обратитесь к @Freezers1
-            </b>
+            <label>Валюта</label>
 
-            <p style="color:var(--muted);line-height:1.5">
-                Для пополнения баланса свяжитесь
-                с гарантом @Freezers1.
-            </p>
+            <select id="depositCurrency">
+                ${currencyOptionsHTML("rub")}
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Сумма</label>
+
+            <input
+                id="depositAmount"
+                type="number"
+                step="any"
+                placeholder="1000">
+
         </div>
 
         <button
             class="primary"
-            style="width:100%;margin-top:5px"
-            onclick="contactGuarantor()">
-            💬 Написать @Freezers1
+            style="width:100%"
+            onclick="deposit()">
+            Пополнить
         </button>
+
+        <p style="
+            color:var(--muted);
+            font-size:12px;
+            margin-top:12px">
+            Пополнение баланса происходит вручную
+            через администратора @Freezers1.
+        </p>
+
     `;
 
-    document.getElementById("modal").classList.add("show");
-}
-
-function contactGuarantor() {
-    
-    const url = "https://t.me/Freezers1";
-
-    if (tg && typeof tg.openTelegramLink === "function") {
-        tg.openTelegramLink(url);
-    } else {
-        window.open(url, "_blank");
-    }
+    document.getElementById("modal")
+        .classList.add("show");
 }
 
 
@@ -1350,31 +1751,11 @@ function deposit() {
     }
 
 
-    balance += amount;
-
-
-    transactions.unshift({
-
-        title: "Пополнение баланса",
-
-        amount: amount,
-
-        date: new Date().toLocaleString("ru-RU")
-
-    });
-
-
-    saveData();
-
-    updateBalance();
-
     closeModal();
 
-    showToast(
-        "Баланс пополнен на " +
-        amount.toLocaleString("ru-RU") +
-        " ₽"
-    );
+    showToast("Напишите @Freezers1 для пополнения баланса");
+
+    openAdminChat();
 }
 
 
@@ -1388,11 +1769,22 @@ function openWithdraw() {
 
         <div class="form-group">
 
+            <label>Валюта</label>
+
+            <select id="withdrawCurrency">
+                ${currencyOptionsHTML("rub")}
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
             <label>Сумма</label>
 
             <input
                 id="withdrawAmount"
                 type="number"
+                step="any"
                 placeholder="1000">
 
         </div>
@@ -1413,6 +1805,9 @@ function openWithdraw() {
 
 function withdraw() {
 
+    const currency =
+        document.getElementById("withdrawCurrency").value;
+
     const amount =
         Number(
             document.getElementById("withdrawAmount").value
@@ -1426,7 +1821,7 @@ function withdraw() {
     }
 
 
-    if (amount > balance) {
+    if (amount > balances[currency]) {
 
         showToast("Недостаточно средств");
 
@@ -1434,7 +1829,7 @@ function withdraw() {
     }
 
 
-    balance -= amount;
+    balances[currency] -= amount;
 
 
     transactions.unshift({
@@ -1442,6 +1837,8 @@ function withdraw() {
         title: "Заявка на вывод",
 
         amount: -amount,
+
+        currency,
 
         date: new Date().toLocaleString("ru-RU")
 
@@ -1503,7 +1900,7 @@ function renderTransactions() {
 
                     ${t.amount >= 0 ? "+" : ""}
 
-                    ${t.amount.toLocaleString("ru-RU")} ₽
+                    ${formatMoney(t.amount, t.currency)}
 
                 </div>
 
@@ -1513,39 +1910,26 @@ function renderTransactions() {
 }
 
 
-/* SUPPORT */
+/* SUPPORT / ARBITRAGE */
+
+function openAdminChat() {
+
+    const username = "Freezers1";
+
+    if (tg?.openTelegramLink) {
+
+        tg.openTelegramLink("https://t.me/" + username);
+
+    } else {
+
+        window.open("https://t.me/" + username, "_blank");
+    }
+}
+
 
 function openSupport() {
 
-    document.getElementById("modalBody").innerHTML = `
-        <div class="modal-title">
-            🛡️ Поддержка
-        </div>
-
-        <div class="card" style="text-align:center">
-            <div style="font-size:45px;margin-bottom:10px">
-                💬
-            </div>
-
-            <b style="font-size:18px">
-                Нужна помощь?
-            </b>
-
-            <p style="color:var(--muted);line-height:1.5">
-                По вопросам сделок, арбитража и работы сервиса
-                обратитесь к гаранту @Freezers1.
-            </p>
-        </div>
-
-        <button
-            class="primary"
-            style="width:100%"
-            onclick="contactGuarantor()">
-            💬 Написать @Freezers1
-        </button>
-    `;
-
-    document.getElementById("modal").classList.add("show");
+    openAdminChat();
 }
 
 
