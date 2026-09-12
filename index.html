@@ -131,7 +131,6 @@
       display: block;
     }
 
-    /* Стиль для активной сделки из ссылки */
     .joined-deal-banner {
       display: none;
       background: #1e293b;
@@ -314,29 +313,121 @@
       line-height: 1.4;
     }
 
+    /* === ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ СДЕЛКИ (ПО ВТОРОМУ СКРИНШОТУ) === */
     .deal-status-card {
       background: var(--card-bg);
-      border-radius: 20px;
-      padding: 20px;
+      border-radius: 24px;
+      padding: 24px 16px;
       border: 1px solid var(--border-color);
       text-align: center;
+      margin-bottom: 20px;
     }
+
+    .circle-icon-wrap {
+      width: 70px;
+      height: 70px;
+      background: #0d2757;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 36px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
+
     .deal-amount {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 900;
-      margin: 12px 0 4px;
+      margin-bottom: 4px;
+      color: var(--text-color);
+      letter-spacing: -0.5px;
     }
+
     .deal-desc {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--subtext-color);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
+
     .deal-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 13px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f4f8;
+      font-size: 14px;
+    }
+
+    .deal-row-label {
+      color: var(--subtext-color);
+      font-weight: 500;
+    }
+
+    .deal-row-val {
+      font-weight: 700;
+      color: var(--text-color);
+      text-align: right;
+    }
+
+    /* Шаги сделки */
+    .steps-container {
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .steps-sub {
+      font-size: 12px;
+      color: var(--subtext-color);
+      margin-bottom: 14px;
+    }
+
+    .steps-dots {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin: 0 10px 8px;
+    }
+
+    .steps-dots::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 2px;
+      background: #e2e8f0;
+      z-index: 0;
+      transform: translateY(-50%);
+    }
+
+    .dot-item {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      z-index: 1;
+    }
+
+    .dot-item.active {
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    .steps-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--subtext-color);
+      font-weight: 600;
+    }
+
+    .steps-labels span {
+      width: 20%;
+      text-align: center;
+    }
+
+    .steps-labels span.active {
+      color: #22c55e;
     }
 
     .deal-list-item {
@@ -508,29 +599,57 @@
       </div>
     </div>
 
-    <!-- ЭКРАН ПРОСМОТРА СДЕЛКИ -->
+    <!-- ЭКРАН ПРОСМОТРА СДЕЛКИ (ПОЛНОЕ СООТВЕТСТВИЕ ВТОРОМУ СКРИНШОТУ) -->
     <div id="page-deal-view" class="tab-page">
-      <div style="font-size: 13px; color: var(--primary-blue); margin-bottom: 12px; cursor: pointer;" onclick="switchTab('deals', document.querySelectorAll('.nav-tab')[0])">← Назад к сделкам</div>
+      <div style="font-size: 14px; color: var(--primary-blue); margin-bottom: 16px; cursor: pointer; font-weight: 700;" onclick="switchTab('deals', document.querySelectorAll('.nav-tab')[0])">← Назад</div>
+      
       <div class="deal-status-card">
-        <div style="font-size: 32px;" id="dv-icon">⭐</div>
-        <div class="deal-amount" id="dv-amount">0 STARS</div>
-        <div class="deal-desc" id="dv-desc">Описание сделки...</div>
+        <div class="circle-icon-wrap" id="dv-icon">⭐</div>
+        <div class="deal-amount" id="dv-amount">2 500 STARS</div>
+        <div class="deal-desc" id="dv-desc">t.me/nft/IceCream-315224</div>
 
         <div class="deal-row">
-          <span style="color: var(--subtext-color);">Статус</span>
-          <span style="font-weight: 700; color: var(--primary-blue);" id="dv-status">Ожидание второй стороны</span>
+          <span class="deal-row-label">Статус</span>
+          <span class="deal-row-val" id="dv-status">Ожидание второй стороны</span>
         </div>
         <div class="deal-row">
-          <span style="color: var(--subtext-color);">Покупатель</span>
-          <span style="font-weight: 700;" id="dv-buyer">@Freezers1</span>
+          <span class="deal-row-label">Продавец</span>
+          <span class="deal-row-val" id="dv-seller" style="font-weight: 600;">Продавец не присоединился</span>
         </div>
         <div class="deal-row">
-          <span style="color: var(--subtext-color);">Код</span>
-          <span style="font-weight: 700;" id="dv-code">------</span>
+          <span class="deal-row-label">Покупатель</span>
+          <span class="deal-row-val" id="dv-buyer" style="color: #f59e0b;">@Angelinvics (Вы)</span>
+        </div>
+        <div class="deal-row">
+          <span class="deal-row-label">Создана</span>
+          <span class="deal-row-val" id="dv-date">11.09.2026, 13:54:34</span>
+        </div>
+        <div class="deal-row" style="border-bottom: none;">
+          <span class="deal-row-label">Код</span>
+          <span class="deal-row-val" id="dv-code" style="font-size: 16px;">CA1715</span>
         </div>
 
-        <button class="btn-primary" style="margin-top: 20px;" onclick="copyDealLink()">Скопировать ссылку для второй стороны</button>
+        <!-- Шаги выполнения -->
+        <div class="steps-container">
+          <div class="steps-sub">Шаг 1 из 5 · Безопасно через Telegram</div>
+          <div class="steps-dots">
+            <div class="dot-item active"></div>
+            <div class="dot-item"></div>
+            <div class="dot-item"></div>
+            <div class="dot-item"></div>
+            <div class="dot-item"></div>
+          </div>
+          <div class="steps-labels">
+            <span class="active">Создана</span>
+            <span>Покупатель</span>
+            <span>Оплачена</span>
+            <span>У гаранта</span>
+            <span>Получена</span>
+          </div>
+        </div>
       </div>
+
+      <button class="btn-primary" onclick="copyDealLink()">Скопировать ссылку для второй стороны</button>
     </div>
 
   </div>
@@ -664,9 +783,10 @@
       'EUR': '€'
     };
 
+    let currentUserTag = '@User';
     let selectedWalletCurr = 'RUB';
 
-    // === ОБРАБОТКА МУЛЬТИ-ВАЛЮТНЫХ БАЛАНСОВ ===
+    // === БАЛАНСЫ ===
     const urlParams = new URLSearchParams(window.location.search);
 
     const balances = {
@@ -677,7 +797,6 @@
       BTC: parseFloat(urlParams.get('btc') ?? localStorage.getItem('bal_btc') ?? '0')
     };
 
-    // Сохранение полученных балансов
     localStorage.setItem('bal_rub', balances.RUB);
     localStorage.setItem('bal_stars', balances.STARS);
     localStorage.setItem('bal_usdt', balances.USDT);
@@ -691,7 +810,6 @@
       document.getElementById('prof-bal-ton').innerText = balances.TON.toFixed(2) + ' TON';
       document.getElementById('prof-bal-btc').innerText = balances.BTC.toFixed(4) + ' BTC';
 
-      // Обновляем кошелек
       const currentVal = balances[selectedWalletCurr] || 0;
       const icon = currencyIcons[selectedWalletCurr] || '';
       document.getElementById('w-bal').innerText = `${currentVal} ${icon}`;
@@ -701,21 +819,30 @@
       const u = tg.initDataUnsafe.user;
       document.getElementById('prof-name').innerText = u.first_name || 'Пользователь';
       document.getElementById('prof-avatar').innerText = (u.first_name || 'F').charAt(0).toUpperCase();
-      if (u.username) document.getElementById('prof-tag').innerText = '@' + u.username;
+      if (u.username) {
+        currentUserTag = '@' + u.username;
+        document.getElementById('prof-tag').innerText = currentUserTag;
+      }
     }
 
     // === ПРОВЕРКА ВХОДЯЩЕЙ СДЕЛКИ (STARTAPP / JOIN PARAM) ===
     let externalDealCode = null;
     function checkIncomingDeal() {
-      const tgStartParam = tg?.initDataUnsafe?.start_param;
-      const rawParam = urlParams.get('startapp') || tgStartParam;
+      let rawParam = tg?.initDataUnsafe?.start_param;
+
+      if (!rawParam) {
+        rawParam = urlParams.get('startapp') || urlParams.get('tgWebAppStartParam');
+      }
+
+      if (!rawParam && window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        rawParam = hashParams.get('tgWebAppStartParam');
+      }
 
       if (rawParam) {
-        externalDealCode = rawParam.replace('join_', '');
+        externalDealCode = rawParam.replace('join_', '').trim();
         document.getElementById('joined-deal-banner').style.display = 'block';
         document.getElementById('joined-deal-code').innerText = externalDealCode;
-        
-        // Автоматически открываем сделку при первой загрузке
         viewJoinedDeal();
       }
     }
@@ -727,15 +854,17 @@
       let deal = deals.find(d => d.code === externalDealCode);
 
       if (!deal) {
+        const now = new Date();
         deal = {
           code: externalDealCode,
-          amount: "Договорная",
-          currency: "RUB",
-          desc: "Переход по приглашению второй стороны",
+          amount: "2 500",
+          currency: "STARS",
+          desc: "Присоединение по коду",
           type: "Присоединение",
-          status: "Активна (Ожидание оплаты)",
-          buyer: "@Freezers1",
-          createdAt: new Date().toLocaleDateString()
+          status: "Ожидание второй стороны",
+          buyer: currentUserTag + " (Вы)",
+          seller: "Продавец не присоединился",
+          createdAt: now.toLocaleDateString() + ", " + now.toLocaleTimeString()
         };
       }
       showDealView(deal);
@@ -801,7 +930,8 @@
 
     function finishDealCreation() {
       closeModal('modal-safety');
-      const generatedCode = 'AB' + Math.floor(100 + Math.random() * 900) + 'D';
+      const generatedCode = 'CA' + Math.floor(1000 + Math.random() * 9000);
+      const now = new Date();
 
       const newDeal = {
         code: generatedCode,
@@ -810,8 +940,9 @@
         desc: dealData.desc,
         type: dealData.type,
         status: 'Ожидание второй стороны',
-        buyer: '@Freezers1',
-        createdAt: new Date().toLocaleDateString()
+        buyer: currentUserTag + ' (Вы)',
+        seller: 'Продавец не присоединился',
+        createdAt: now.toLocaleDateString() + ', ' + now.toLocaleTimeString()
       };
 
       const deals = getStoredDeals();
@@ -821,6 +952,7 @@
       showDealView(newDeal);
     }
 
+    // === ОТОБРАЖЕНИЕ КАРТОЧКИ СДЕЛКИ (КАК НА СКРИНШОТЕ 2) ===
     function showDealView(deal) {
       currentOpenedCode = deal.code;
       const icon = currencyIcons[deal.currency] || '⭐';
@@ -829,8 +961,10 @@
       document.getElementById('dv-amount').innerText = `${deal.amount} ${deal.currency}`;
       document.getElementById('dv-desc').innerText = deal.desc;
       document.getElementById('dv-code').innerText = deal.code;
-      document.getElementById('dv-buyer').innerText = deal.buyer || '@Freezers1';
+      document.getElementById('dv-buyer').innerText = deal.buyer || (currentUserTag + ' (Вы)');
+      document.getElementById('dv-seller').innerText = deal.seller || 'Продавец не присоединился';
       document.getElementById('dv-status').innerText = deal.status;
+      document.getElementById('dv-date').innerText = deal.createdAt || (new Date().toLocaleDateString() + ', ' + new Date().toLocaleTimeString());
 
       switchTab('deal-view', null);
     }
@@ -858,7 +992,8 @@
     }
 
     function copyDealLink() {
-      const link = `https://t.me/freezersdemo2_bot?start=join_${currentOpenedCode}`;
+      // Исполнение ссылки под Telegram Direct Mini App
+      const link = `https://t.me/freezersdemo2_bot/app?startapp=join_${currentOpenedCode}`;
       navigator.clipboard.writeText(link);
       tg.showAlert("Ссылка скопирована!");
     }
@@ -952,15 +1087,17 @@
       const code = document.getElementById('join-code-input').value;
       if (!code) { tg.showAlert("Введите код!"); return; }
       
+      const now = new Date();
       const deal = {
         code: code,
-        amount: "Договорная",
-        currency: "RUB",
+        amount: "2 500",
+        currency: "STARS",
         desc: "Вход по коду",
         type: "Присоединение",
-        status: "Ожидание оплаты",
-        buyer: "@Freezers1",
-        createdAt: new Date().toLocaleDateString()
+        status: "Ожидание второй стороны",
+        buyer: currentUserTag + " (Вы)",
+        seller: "Продавец не присоединился",
+        createdAt: now.toLocaleDateString() + ", " + now.toLocaleTimeString()
       };
       showDealView(deal);
     }
